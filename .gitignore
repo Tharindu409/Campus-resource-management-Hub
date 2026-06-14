@@ -1,0 +1,28 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Java / Maven (backend)
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
+
+# Node / Vite (frontend)
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/.cache/
+
+# Runtime uploads / temp data
+backend/uploads/
+
+# Test artifacts
+coverage/

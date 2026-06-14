@@ -1,0 +1,12 @@
+{
+  "java.configuration.updateBuildConfiguration": "interactive",
+  "java.compile.nullAnalysis.mode": "automatic",
+
+  "code-runner.runInTerminal": true,
+  "code-runner.clearPreviousOutput": true,
+  "code-runner.executorMap": {
+    "java": "cd \"$workspaceRoot/backend\" ; .\\mvnw.cmd spring-boot:run -DskipTests"
+  },
+  "java.debug.settings.onBuildFailureProceed": true,
+  "java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx4G -Xms100m -Xlog:disable"
+}

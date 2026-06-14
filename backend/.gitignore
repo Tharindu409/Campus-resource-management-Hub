@@ -1,0 +1,6 @@
+# Java / Maven build artifacts
+target/
+.mvn/wrapper/maven-wrapper.jar
+
+# Runtime uploads / temp data
+uploads/

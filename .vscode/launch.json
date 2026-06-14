@@ -1,0 +1,41 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "SmartCampusApplication",
+      "request": "launch",
+      "mainClass": "com.sliit.it3030.smartcampus.SmartCampusApplication",
+      "projectName": "backend"
+    },
+    {
+      "type": "java",
+      "name": "SmartCampusApplication",
+      "request": "launch",
+      "mainClass": "com.sliit.it3030.smartcampus.SmartCampusApplication",
+      "projectName": "smartcampus"
+    },
+    {
+      "type": "java",
+      "name": "SmartcampusApplication",
+      "request": "launch",
+      "mainClass": "com.sliit.it3030.smartcampus.SmartCampusApplication",
+      "projectName": "smartcampus"
+    },
+    {
+      "type": "java",
+      "name": "BookingAppApplication",
+      "request": "launch",
+      "mainClass": "com.sliit.it3030.smartcampus.BookingAppApplication",
+      "projectName": "backend"
+    },
+    {
+      "type": "java",
+      "name": "Run SmartcampusApplication",
+      "request": "launch",
+      "mainClass": "com.sliit.it3030.smartcampus.SmartCampusApplication",
+      "projectName": "backend",
+      "cwd": "${workspaceFolder}/backend"
+    }
+  ]
+}
