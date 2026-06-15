@@ -1,95 +1,107 @@
-# Smart Campus — Full-Stack Application
+<!-- prettier-ignore -->
+# Smart Campus — Full-Stack Resource Management
 
-A Smart Campus platform providing resource booking, ticketing/support, user management, attachments, and notifications. This repository contains a Java Spring backend and a React + Vite frontend.
+An elegant, full-stack Smart Campus platform that helps users and administrators book campus resources, file and manage support tickets, attach files, and receive notifications. Built with a Java Spring Boot backend and a React + Vite frontend.
 
-## Repository structure
+--
 
-- `backend/` — Java Spring Boot application (Maven)
-- `frontend/` — React app scaffolded with Vite
-- `uploads/` — uploaded files and attachments
+## 🚀 Highlights
 
-## Key Features
+- Intuitive resource booking with calendar view
+- Ticketing system with attachments and role-based workflows
+- Admin and technician panels for management and fixes
+- Notification center and real-time updates (where configured)
 
-- Resource booking and calendar views
-- Ticket creation, assignment, and tracking
-- File attachments for tickets and resources
-- User management and role-based panels (admin, technician, user)
-- Notifications and notification panel
+## 📦 Repo Layout
 
-## Requirements
+- `backend/` — Spring Boot APIs and business logic (Maven)
+- `frontend/` — React + Vite single-page app
+- `uploads/` — persisted file attachments
 
-- Java 17+ (or the version specified in `backend/pom.xml`)
-- Maven
-- Node.js 18+ and npm/yarn
+## 🛠️ Tech Stack
 
-## Backend (Java Spring)
+- Backend: Java, Spring Boot, Maven
+- Frontend: React, Vite, JavaScript
+- Persistence: (see `backend` config — likely H2 / MySQL / Postgres)
 
-1. Navigate to the backend folder:
+## ▶️ Quick Start (Development)
+
+1) Start the backend
 
 ```bash
 cd backend
+./mvnw spring-boot:run    # macOS / Linux
+mvnw.cmd spring-boot:run  # Windows
 ```
 
-2. Build and run with Maven:
+Backend default: http://localhost:8080
 
-```bash
-./mvnw spring-boot:run    # on Unix/macOS
-mvnw.cmd spring-boot:run  # on Windows
-```
-
-3. The backend runs by default on `http://localhost:8080` (check `src/main/resources/application.properties`).
-
-## Frontend (React + Vite)
-
-1. Navigate to the frontend folder:
+2) Start the frontend
 
 ```bash
 cd frontend
-```
-
-2. Install dependencies and start the development server:
-
-```bash
 npm install
 npm run dev
 ```
 
-3. The frontend dev server typically runs on `http://localhost:5173`.
+Frontend default: http://localhost:5173
 
-## Environment and Configuration
+Tip: Ensure the frontend API base URL points to the backend (see `frontend/src/api/axios.js`).
 
-- Backend configuration is under `backend/src/main/resources/application.properties`.
-- Update API base URLs in `frontend/src/api/axios.js` or `frontend/src/api/index.js` if needed.
+## ⚙️ Configuration
 
-## Tests
+- Backend properties: `backend/src/main/resources/application.properties`
+- Common envs you may need to set:
 
-- Backend: use Maven to run tests
+```env
+# Example envs (replace values as needed)
+SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/smartcampus
+SPRING_DATASOURCE_USERNAME=youruser
+SPRING_DATASOURCE_PASSWORD=yourpass
+JWT_SECRET=replace-with-secure-secret
+```
+
+## ✅ Testing
+
+- Backend unit tests (Maven):
 
 ```bash
 cd backend
 ./mvnw test
 ```
 
-- Frontend: run the standard npm test command if tests are present
+- Frontend tests (if present):
 
 ```bash
 cd frontend
 npm test
 ```
 
-## Deployment
+## 📦 Production Build
 
-- Build the frontend for production with `npm run build` and serve the `dist/` folder via static hosting or integrate into the backend as static resources.
-- Build the backend with `./mvnw package` and run the produced JAR.
+- Frontend: `npm run build` (creates `dist/`)
+- Backend: `./mvnw package` then run the generated JAR
 
-## Contributing
+You can serve the `dist/` directory via any static server or integrate it into the backend as static resources.
 
-- Follow repository conventions. Open issues and PRs for enhancements or bug fixes.
+## 🧭 Development Tips
 
-## License
+- Use browser devtools and backend logs for API debugging.
+- Uploads are saved to the `uploads/` folder — ensure write permissions.
+- To change API endpoints, modify `frontend/src/api/axios.js` and backend `application.properties` accordingly.
 
-Specify your license here (e.g., MIT) or remove this section.
+## 🤝 Contributing
 
-## Contact
+Contributions welcome — please open an issue describing the feature or bug, then submit a pull request.
 
-Project owner / maintainer: update this section with contact details.
+## 📜 License
+
+Add your license here (e.g., MIT). If unsure, add `LICENSE` file at the repo root.
+
+## 📬 Contact
+
+Project owner / maintainer: update this section with name and email or a link to your GitHub profile.
+
+--
+
+Made with ❤️ for campus efficiency.
