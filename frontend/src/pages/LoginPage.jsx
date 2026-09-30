@@ -17,6 +17,9 @@ import {
   FaUsers,
 } from 'react-icons/fa';
 
+import logoMark from '../assets/logo/logo-full.png';
+ 
+
 const HIGHLIGHTS = [
   {
     icon: <FaCalendarCheck size={16} />,
@@ -114,8 +117,9 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden" style={{ background: 'var(--bg-primary)' }}>
-      <div className="pointer-events-none absolute inset-0">
+    <div className="relative flex min-h-screen flex-col overflow-x-clip" style={{ background: 'var(--bg-primary)' }}>
+      <div className="pointer-events-none absolute inset-0 overflow-clip">
+        <div className="landing-background-image absolute inset-0" />
         <div className="mega-orb-a absolute -top-36 -left-36 h-[34rem] w-[34rem] rounded-full" style={{ background: 'radial-gradient(circle at 30% 30%, rgba(249,115,22,0.46), rgba(249,115,22,0.08) 55%, transparent 75%)' }} />
         <div className="mega-orb-b absolute top-[18%] right-[-10rem] h-[32rem] w-[32rem] rounded-full" style={{ background: 'radial-gradient(circle at 60% 40%, rgba(253,186,116,0.42), rgba(253,186,116,0.08) 58%, transparent 78%)' }} />
         <div className="mega-orb-c absolute bottom-[-14rem] left-[18%] h-[30rem] w-[30rem] rounded-full" style={{ background: 'radial-gradient(circle at 50% 50%, rgba(249,115,22,0.28), rgba(249,115,22,0.06) 62%, transparent 80%)' }} />
@@ -129,11 +133,18 @@ export default function LoginPage() {
 
       <header className="nav-sticky sticky top-0 z-30 border-b backdrop-blur-sm" style={{ borderColor: 'var(--border)', background: 'rgba(255,255,255,0.9)' }}>
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl text-white font-black" style={{ background: 'linear-gradient(140deg, var(--primary), var(--primary-hover))' }}>
-              S
-            </div>
+
+             <img
+                  src={logoMark}
+                  alt=""
+                  className="h-11 w-auto shrink-0"
+                  draggable={false}
+              />
+
             <div>
+
               <p className="text-sm font-black tracking-wide" style={{ color: 'var(--text-primary)' }}>SmartCampus</p>
               <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>Operational Intelligence for Campuses</p>
             </div>
@@ -172,7 +183,7 @@ export default function LoginPage() {
         </div>
       </header>
 
-      <main className="relative z-10 mx-auto max-w-7xl px-6 pb-14 pt-10">
+      <main className="relative z-10 mx-auto w-full max-w-7xl flex-1 px-6 pb-14 pt-10">
         <section className="grid gap-8 lg:grid-cols-[1.35fr_1fr]">
           <div className="stage-enter rounded-3xl border p-8 shadow-sm" style={{ borderColor: 'var(--border)', background: 'rgba(255,255,255,0.9)' }}>
             <div className="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[11px] font-bold uppercase tracking-wider" style={{ borderColor: 'rgba(249,115,22,0.28)', color: 'var(--primary)', background: 'rgba(249,115,22,0.08)' }}>
@@ -379,49 +390,51 @@ export default function LoginPage() {
         </section>
       </main>
 
-      <footer className="relative z-10 mt-8 border-t" style={{ borderColor: 'var(--border)', background: 'rgba(255,255,255,0.92)' }}>
-        <div className="mx-auto grid max-w-7xl gap-8 px-6 py-10 md:grid-cols-[1.2fr_0.8fr_0.8fr]">
+      <footer className="relative z-10 mt-auto border-t-2" style={{ borderColor: 'var(--primary)', background: 'rgba(255,255,255,0.96)' }}>
+        <div className="mx-auto grid max-w-7xl gap-8 px-6 py-8 md:grid-cols-[minmax(0,1.5fr)_0.7fr_0.8fr]">
           <div>
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl text-white font-black" style={{ background: 'linear-gradient(140deg, var(--primary), var(--primary-hover))' }}>
-                S
-              </div>
-              <div>
-                <p className="text-sm font-black" style={{ color: 'var(--text-primary)' }}>SmartCampus</p>
-                <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>Operational Intelligence for Campuses</p>
-              </div>
-            </div>
-            <p className="mt-4 max-w-md text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-              A modern platform for managing campus resources, maintenance operations, and communication workflows from one place.
+            <img src={logoMark} alt="Smart Campus Resources Hub" className="h-14 w-auto" draggable={false} />
+            <p className="mt-3 max-w-md text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+              One place to coordinate campus resources, maintenance, and communication.
             </p>
           </div>
 
-          <div>
-            <p className="text-xs font-black uppercase tracking-wider" style={{ color: 'var(--text-primary)' }}>Quick Links</p>
+          <nav aria-label="Footer" >
+            <p className="text-xs font-black uppercase tracking-wider" style={{ color: 'var(--text-primary)' }}>Explore</p>
             <ul className="mt-3 space-y-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
               {NAV_TABS.map((tab) => (
                 <li key={tab.label}>
-                  <a href={tab.href} className="transition-colors hover:opacity-80">{tab.label}</a>
+                  <a href={tab.href} className="transition-colors hover:text-orange-600">{tab.label}</a>
                 </li>
               ))}
-              <li><button onClick={() => navigate('/login/local')} className="text-left transition-colors hover:opacity-80">Login</button></li>
+              <li><button onClick={() => navigate('/login/local')} className="text-left transition-colors hover:text-orange-600">Login</button></li>
             </ul>
-          </div>
+          </nav>
 
           <div>
             <p className="text-xs font-black uppercase tracking-wider" style={{ color: 'var(--text-primary)' }}>Contact</p>
-            <ul className="mt-3 space-y-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
-              <li className="inline-flex items-center gap-2"><FaEnvelope size={12} style={{ color: 'var(--primary)' }} /> support@smartcampus.edu</li>
-              <li className="inline-flex items-center gap-2"><FaPhoneAlt size={12} style={{ color: 'var(--primary)' }} /> +94 11 123 4567</li>
+            <ul className="mt-3 space-y-3 text-sm" style={{ color: 'var(--text-secondary)' }}>
+              <li className="flex items-center gap-2"><FaEnvelope size={13} style={{ color: 'var(--primary)' }} /> support@smartcampus.edu</li>
+              <li className="flex items-center gap-2"><FaPhoneAlt size={13} style={{ color: 'var(--primary)' }} /> +94 11 123 4567</li>
             </ul>
           </div>
         </div>
-        <div className="border-t px-6 py-4 text-center text-xs" style={{ borderColor: 'var(--border)', color: 'var(--text-secondary)' }}>
-          SmartCampus © 2026. All rights reserved.
+        <div className="border-t" style={{ borderColor: 'var(--border)', background: 'var(--bg-section)' }}>
+          <div className="mx-auto flex max-w-7xl flex-col gap-1 px-6 py-3 text-xs sm:flex-row sm:items-center sm:justify-between" style={{ color: 'var(--text-secondary)' }}>
+            <span>Smart Campus Resources Hub © 2026</span>
+            <span>Campus operations, connected.</span>
+          </div>
         </div>
       </footer>
 
-      <style>{`
+      <style>
+        {`
+        .landing-background-image {
+          background-image: url('/landing-background.jpg');
+          background-size: cover;
+          background-position: center;
+        }
+
         .stage-enter {
           opacity: 0;
           transform: translateY(18px);

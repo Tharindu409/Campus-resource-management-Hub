@@ -7,7 +7,6 @@ import {
   LayoutDashboard,
   PlusCircle,
   BookOpen,
-  User,
   Users,
   Shield,
   Wrench,
@@ -16,6 +15,32 @@ import {
   Package,
 } from 'lucide-react';
 import NotificationBell from './notifications/NotificationBell';
+import logoMark from '../assets/logo/logo-full.png';
+
+const ICON = 16;
+
+const USER_LINKS = [
+  { to: '/dashboard', icon: <LayoutDashboard size={ICON} />, label: 'Dashboard' },
+  { to: '/create', icon: <PlusCircle size={ICON} />, label: 'New booking' },
+  { to: '/my-bookings', icon: <BookOpen size={ICON} />, label: 'My bookings' },
+  { to: '/resources', icon: <Package size={ICON} />, label: 'Resources' },
+  { to: '/create-ticket', icon: <Wrench size={ICON} />, label: 'New ticket' },
+  { to: '/my-tickets', icon: <ClipboardList size={ICON} />, label: 'My tickets' },
+  { to: '/calendar', icon: <CalendarDays size={ICON} />, label: 'Calendar' },
+];
+
+const ADMIN_LINKS = [
+  { to: '/admin-dashboard', icon: <LayoutDashboard size={ICON} />, label: 'Overview' },
+  { to: '/admin-dashboard?tab=bookings', icon: <BookOpen size={ICON} />, label: 'Bookings' },
+  { to: '/resources', icon: <Package size={ICON} />, label: 'Resources' },
+  { to: '/admin', icon: <Shield size={ICON} />, label: 'Tickets' },
+  { to: '/users', icon: <Users size={ICON} />, label: 'Users' },
+  { to: '/calendar', icon: <CalendarDays size={ICON} />, label: 'Calendar' },
+];
+
+const TECHNICIAN_LINKS = [
+  { to: '/technician', icon: <Wrench size={ICON} />, label: 'Workspace' },
+];
 
 export default function Navbar() {
   const { currentUser } = useUser();
@@ -33,41 +58,14 @@ export default function Navbar() {
   };
 
   const goToDashboard = () => {
-    navigate(isAdmin ? '/admin-dashboard' : '/dashboard');
+    if (isTechnician) navigate('/technician');
+    else navigate(isAdmin ? '/admin-dashboard' : '/dashboard');
   };
 
-  const userLinks = [
-    { to: '/dashboard', icon: <LayoutDashboard size={16} />, label: 'Dashboard' },
-    { to: '/create', icon: <PlusCircle size={16} />, label: 'Booking' },
-    { to: '/my-bookings', icon: <BookOpen size={16} />, label: 'Bookings' },
-    { to: '/resources', icon: <Package size={16} />, label: 'Resources' },
-    { to: '/create-ticket', icon: <Wrench size={16} />, label: 'Ticket' },
-    { to: '/my-tickets', icon: <ClipboardList size={16} />, label: 'Tickets' },
-    { to: '/calendar', icon: <CalendarDays size={16} />, label: 'Calendar' },
-  ];
-
-  const adminLinks = [
-    { to: '/admin-dashboard', icon: <LayoutDashboard size={16} />, label: 'Overview' },
-    { to: '/admin-dashboard?tab=bookings', icon: <BookOpen size={16} />, label: 'Bookings' },
-    { to: '/resources', icon: <Package size={16} />, label: 'Resources' },
-    { to: '/admin', icon: <Shield size={16} />, label: 'Tickets' },
-    { to: '/users', icon: <Users size={16} />, label: 'Users' },
-    { to: '/calendar', icon: <CalendarDays size={16} />, label: 'Calendar' },
-  ];
-
-  const technicianLinks = [
-    { to: '/technician', icon: <LayoutDashboard size={16} />, label: 'Dashboard' },
-    { to: '/technician', icon: <Wrench size={16} />, label: 'Tech Workspace' },
-  ];
-
   const links = useMemo(() => {
-    if (isAdmin) return adminLinks;
-
-    if (isTechnician) {
-      return technicianLinks;
-    }
-
-    return userLinks;
+    if (isAdmin) return ADMIN_LINKS;
+    if (isTechnician) return TECHNICIAN_LINKS;
+    return USER_LINKS;
   }, [isAdmin, isTechnician]);
 
   const dashboardTab = new URLSearchParams(location.search).get('tab');
@@ -76,115 +74,147 @@ export default function Navbar() {
     if (path === '/admin-dashboard') {
       return location.pathname === '/admin-dashboard' && dashboardTab !== 'bookings';
     }
-
     if (path === '/admin-dashboard?tab=bookings') {
       return location.pathname === '/admin-dashboard' && dashboardTab === 'bookings';
     }
-
-    return location.pathname === path;
+    return location.pathname === path || location.pathname.startsWith(`${path}/`);
   };
 
   const userLabel = currentUser?.userName || currentUser?.email || 'Account';
-  const roleLabel = isAdmin ? 'Admin' : isTechnician ? 'Technician' : 'User';
+  const roleLabel = isAdmin ? 'Admin' : isTechnician ? 'Technician' : 'Student';
 
   return (
-    <nav
-      className="sticky top-0 z-50"
+    <header
+      className="sticky top-0 z-50 w-full overflow-x-clip"
       style={{
-        background: 'rgba(255,255,255,0.9)',
+        background: 'rgba(255,255,255,0.86)',
         backdropFilter: 'blur(16px)',
-        borderBottom: '1px solid rgba(148, 163, 184, 0.22)',
+        WebkitBackdropFilter: 'blur(16px)',
+        borderBottom: '1px solid var(--border, rgba(148,163,184,0.25))',
       }}
     >
-      <div className="max-w-7xl mx-auto px-4 py-3">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+      <style>{`
+        .nb-focus:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+        .nb-scroll { scrollbar-width: none; -ms-overflow-style: none; }
+        .nb-scroll::-webkit-scrollbar { display: none; }
+        .nb-link { position: relative; transition: color 120ms ease, background-color 120ms ease; }
+        .nb-link:hover { background: rgba(249,115,22,0.07); }
+        .nb-link[aria-current="page"]::after {
+          content: ''; position: absolute; left: 10px; right: 10px; bottom: -9px;
+          height: 3px; border-radius: 3px 3px 0 0; background: var(--primary);
+        }
+        @media (max-width: 1279px) {
+          .nb-link[aria-current="page"]::after { bottom: -1px; }
+        }
+        @media (prefers-reduced-motion: reduce) { .nb-link { transition: none; } }
+      `}</style>
+
+      <div className="mx-auto max-w-7xl px-4">
+        {/* Row 1: brand, (xl+) links, actions */}
+        <div className="grid h-16 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3">
           <Link
-            to={isAdmin ? '/admin-dashboard' : '/dashboard'}
-            className="flex items-center justify-between gap-3 shrink-0"
+            to={isAdmin ? '/admin-dashboard' : isTechnician ? '/technician' : '/dashboard'}
+            className="nb-focus col-start-1 flex items-center gap-3 rounded-xl"
+            aria-label="Smart Campus Resources Hub home"
           >
-            <div className="flex items-center gap-2">
-              <div
-                className="w-9 h-9 rounded-xl flex items-center justify-center shadow-sm"
-                style={{
-                  background: 'linear-gradient(135deg, var(--accent-start), var(--accent-end))',
-                }}
-              >
-                <CalendarDays size={16} className="text-white" />
-              </div>
-              <div>
-                <p className="font-bold text-sm leading-tight" style={{ color: 'var(--text-primary)' }}>
-                  SmartCampus
-                </p>
-                <p className="text-[11px] leading-tight" style={{ color: 'var(--text-secondary)' }}>
-                  {roleLabel} workspace
-                </p>
-              </div>
-            </div>
+            <img
+              src={logoMark}
+              alt=""
+              className="h-11 w-auto shrink-0"
+              draggable={false}
+            />
+            <span className="hidden leading-tight sm:block">
+              <span className="block text-base font-extrabold tracking-tight" style={{ color: 'var(--text-primary)' }}>
+                Smart Campus
+              </span>
+              <span className="block text-xs" style={{ color: 'var(--text-secondary)' }}>
+                {roleLabel} workspace
+              </span>
+            </span>
           </Link>
 
-          <div
-            className="flex items-center gap-1 p-1 rounded-2xl overflow-x-auto custom-scrollbar lg:flex-1 lg:justify-center"
-            style={{
-              background: 'rgba(255,255,255,0.78)',
-              border: '1px solid rgba(148, 163, 184, 0.22)',
-            }}
+          {/* Desktop links: xl and up only. min-w-0 lets this shrink instead of pushing the buttons off-screen. */}
+          <nav
+            aria-label="Main"
+            className="nb-scroll col-start-2 hidden h-full min-w-0 items-center justify-center gap-0.5 overflow-x-auto xl:flex"
           >
             {links.map((link) => {
               const active = isLinkActive(link.to);
-
               return (
                 <Link
-                  key={link.to}
+                  key={link.label}
                   to={link.to}
-                  className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold transition-all whitespace-nowrap"
-                  style={{
-                    background: active ? 'linear-gradient(135deg, rgba(249,115,22,0.18), rgba(251,146,60,0.08))' : 'transparent',
-                    color: active ? 'var(--primary-hover)' : 'var(--text-secondary)',
-                    border: active
-                      ? '1px solid rgba(249,115,22,0.28)'
-                      : '1px solid transparent',
-                  }}
+                  aria-current={active ? 'page' : undefined}
+                  className="nb-link nb-focus flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg px-2.5 py-2 text-sm font-semibold"
+                  style={{ color: active ? 'var(--primary)' : 'var(--text-secondary)' }}
                 >
                   {link.icon}
-                  <span className="hidden sm:inline">{link.label}</span>
+                  {link.label}
                 </Link>
               );
             })}
-          </div>
+          </nav>
 
-          <div className="flex items-center justify-between gap-2 shrink-0 lg:justify-end">
+          {/* Actions always stay fully visible */}
+          <div className="col-start-3 flex items-center gap-2">
             <NotificationBell />
 
             <button
               onClick={goToDashboard}
-              className="flex items-center gap-2 px-3 py-2 rounded-xl transition-all"
-              style={{
-                background: 'rgba(255,255,255,0.86)',
-                border: '1px solid rgba(148, 163, 184, 0.28)',
-                color: 'var(--text-primary)',
-              }}
+              className="nb-focus flex items-center gap-2.5 rounded-xl border p-1.5 transition-colors hover:bg-orange-50 sm:pr-3 xl:pr-1.5"
+              style={{ borderColor: 'var(--border, rgba(148,163,184,0.3))', background: 'white', color: 'var(--text-primary)' }}
+              title={`${userLabel} · ${roleLabel}`}
+              aria-label={`${userLabel}, ${roleLabel}. Go to dashboard`}
             >
-              <User size={14} />
-              <span className="text-xs hidden sm:inline max-w-36 truncate">
-                {userLabel}
+              <span
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
+                style={{ background: 'linear-gradient(135deg, var(--primary), var(--secondary, #EA580C))' }}
+              >
+                {userLabel?.charAt(0)?.toUpperCase() || 'U'}
+              </span>
+              {/* Name is shown between sm and xl; at xl the links need the room, so avatar only */}
+              <span className="hidden text-left leading-tight sm:block xl:hidden">
+                <span className="block max-w-32 truncate text-sm font-semibold">{userLabel}</span>
+                <span className="block text-[11px]" style={{ color: 'var(--text-secondary)' }}>{roleLabel}</span>
               </span>
             </button>
 
             <button
               onClick={handleLogout}
-              className="flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-semibold transition-all"
-              style={{
-                background: 'linear-gradient(135deg, rgba(249,115,22,0.16), rgba(234,88,12,0.12))',
-                color: 'var(--primary-hover)',
-                border: '1px solid rgba(249,115,22,0.22)',
-              }}
+              className="nb-focus flex shrink-0 items-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-semibold transition-colors hover:bg-orange-50"
+              style={{ borderColor: 'var(--border, rgba(148,163,184,0.3))', background: 'white', color: 'var(--text-secondary)' }}
+              aria-label="Log out"
+              title="Log out"
             >
-              <LogOut size={14} />
-              <span className="hidden md:inline">Logout</span>
+              <LogOut size={16} />
+              <span className="hidden md:inline xl:hidden 2xl:inline">Log out</span>
             </button>
           </div>
         </div>
+
+        {/* Row 2 (below xl): scrollable links with visible labels */}
+        <nav
+          aria-label="Main"
+          className="nb-scroll -mx-4 flex gap-1 overflow-x-auto px-4 pb-1 xl:hidden"
+          style={{ borderTop: '1px solid rgba(148,163,184,0.15)' }}
+        >
+          {links.map((link) => {
+            const active = isLinkActive(link.to);
+            return (
+              <Link
+                key={link.label}
+                to={link.to}
+                aria-current={active ? 'page' : undefined}
+                className="nb-link nb-focus my-1 flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-semibold"
+                style={{ color: active ? 'var(--primary)' : 'var(--text-secondary)' }}
+              >
+                {link.icon}
+                {link.label}
+              </Link>
+            );
+          })}
+        </nav>
       </div>
-    </nav>
+    </header>
   );
 }

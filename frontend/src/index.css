@@ -3,6 +3,10 @@
 @theme {
   --font-sans: 'Inter', 'Outfit', sans-serif;
   --font-display: 'Outfit', sans-serif;
+  --text-xs: 0.8125rem;
+  --text-xs--line-height: 1.4;
+  --text-sm: 0.9375rem;
+  --text-sm--line-height: 1.5;
   --color-glass: rgba(255, 255, 255, 0.92);
   --color-glass-strong: rgba(255, 255, 255, 0.98);
   --color-glass-border: rgba(229, 231, 235, 1);
@@ -10,65 +14,194 @@
 
 :root {
   color-scheme: light;
-  --primary: #f97316;
-  --primary-hover: #ea580c;
-  --primary-light: #fdba74;
 
-  --bg-primary: #ffffff;
-  --bg-section: #f8fafc;
+  --primary: #e35336;
+  --primary-strong: #d4462d;
+  --primary-hover: #d4462d;
+  --primary-soft: #fff0eb;
+  --primary-light: #f7b69d;
+
+  --secondary: #f4a460;
+  --accent-indigo: #7c5a42;
+  --accent-purple: #a0522d;
+  --accent-rose: #c76a47;
+  --accent-cyan: #c97a55;
+  --secondary-soft: #fff4ea;
+  --success: #0f9f6e;
+  --success-soft: #e8fff7;
+  --warning: #d97706;
+  --warning-soft: #fff4d6;
+  --danger: #dc2626;
+  --danger-soft: #ffe7e7;
+  --info: #0ea5e9;
+  --info-soft: #e0f7ff;
+
+  --bg-primary: #f3f3f1;
+  --bg-page: #efefec;
+  --bg-section: #f7f5f1;
   --surface: #ffffff;
   --surface-strong: #ffffff;
-  --surface-muted: #f1f5f9;
+  --surface-muted: #f3efe8;
   --surface-hover: #fff7ed;
 
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --muted: #94a3b8;
-  --border: #e2e8f0;
-  --focus-ring: rgba(249, 115, 22, 0.24);
+  --text-primary: #1f1f1f;
+  --text-secondary: #3c3c3c;
+  --muted: #6b7280;
+  --border: #e8e2d9;
+  --focus-ring: rgba(227, 83, 54, 0.22);
 
-  --accent-start: #f97316;
-  --accent-mid: #fb923c;
-  --accent-end: #ea580c;
-  
-  /* Additional vibrant accents */
-  --accent-indigo: #6366f1;
-  --accent-purple: #a855f7;
-  --accent-rose: #f43f5e;
-  --accent-cyan: #06b6d4;
+  --accent-start: #e35336;
+  --accent-mid: #f5f5dc;
+  --accent-end: #f4a460;
 
-  --status-pending: #f59e0b;
-  --status-pending-bg: rgba(245, 158, 11, 0.1);
-  --status-pending-border: rgba(245, 158, 11, 0.2);
+  --accent-sienna: #a0522d;
+  --accent-peach: #f4a460;
+  --accent-ivory: #f5f5dc;
+  --accent-copper: #c97a55;
 
-  --status-approved: #10b981;
-  --status-approved-bg: rgba(16, 185, 129, 0.1);
-  --status-approved-border: rgba(16, 185, 129, 0.2);
+  --status-pending: #b45309;
+  --status-pending-bg: rgba(245, 158, 11, 0.12);
+  --status-pending-border: rgba(217, 119, 6, 0.28);
 
-  --status-rejected: #ef4444;
-  --status-rejected-bg: rgba(239, 68, 68, 0.1);
-  --status-rejected-border: rgba(239, 68, 68, 0.2);
+  --status-approved: #047857;
+  --status-approved-bg: rgba(16, 185, 129, 0.12);
+  --status-approved-border: rgba(5, 150, 105, 0.28);
 
-  --status-cancelled: #64748b;
-  --status-cancelled-bg: rgba(100, 116, 139, 0.1);
-  --status-cancelled-border: rgba(100, 116, 139, 0.2);
+  --status-rejected: #b91c1c;
+  --status-rejected-bg: rgba(239, 68, 68, 0.12);
+  --status-rejected-border: rgba(185, 28, 28, 0.32);
+
+  --status-cancelled: #475569;
+  --status-cancelled-bg: rgba(100, 116, 139, 0.12);
+  --status-cancelled-border: rgba(71, 85, 105, 0.28);
+
+  --shadow-soft: 0 18px 50px rgba(31, 31, 31, 0.08);
+  --shadow-card: 0 12px 28px rgba(31, 31, 31, 0.06);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   margin: 0;
   min-width: 320px;
-  background-color: var(--bg-primary);
-  background-image: 
-    radial-gradient(circle at 10% 20%, rgba(249, 115, 22, 0.12), transparent 30%),
-    radial-gradient(circle at 85% 25%, rgba(253, 186, 116, 0.16), transparent 30%),
-    radial-gradient(circle at 50% 92%, rgba(251, 146, 60, 0.1), transparent 28%);
-  background-attachment: fixed;
+  background: #f4f2ee;
   color: var(--text-primary);
   font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
 }
 
 #root {
   min-height: 100vh;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+.admin-dashboard-shell {
+  overflow-x: clip;
+}
+
+.admin-dashboard-grid {
+  grid-template-columns: 280px minmax(0, 1fr);
+  align-items: start;
+}
+
+.admin-sidebar {
+  position: sticky;
+  top: 1.5rem;
+  height: calc(100vh - 3rem);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 10;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(227, 83, 54, 0.12), rgba(255,255,255,0.96));
+}
+
+.admin-sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.admin-sidebar-btn {
+  min-height: 40px;
+  padding-block: 0.5rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.admin-sidebar-btn:hover {
+  transform: translateX(2px);
+  box-shadow: 0 10px 20px rgba(31, 31, 31, 0.06);
+}
+
+.admin-content {
+  min-width: 0;
+}
+
+/* Keep repeated action controls compact and fluid across the app. */
+button[class*="px-5"][class*="py-3"],
+button[class*="px-6"][class*="py-3"] {
+  padding-inline: clamp(0.75rem, 2vw, 0.875rem);
+  padding-block: clamp(0.55rem, 1.5vw, 0.625rem);
+}
+
+button[class~="p-3.5"] {
+  padding: 0.625rem;
+}
+
+@media (max-width: 639px) {
+  .admin-sidebar-btn {
+    min-height: 38px;
+  }
+
+  button[class*="px-5"][class*="py-3"],
+  button[class*="px-6"][class*="py-3"] {
+    font-size: 0.8125rem;
+  }
+}
+
+.glass-card,
+.glass-panel,
+.glass-panel-strong {
+  box-shadow: var(--shadow-card);
+  border-color: rgba(148, 163, 184, 0.18);
+}
+
+@media (max-width: 1023px) {
+  .admin-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-sidebar {
+    position: static;
+    height: auto;
+    background: linear-gradient(180deg, rgba(227, 83, 54, 0.08), rgba(255,255,255,0.96));
+  }
 }
 
 .page-enter {

@@ -5,6 +5,7 @@ export const authApi = {
   login: (data) => api.post('/auth/login', data),
   register: (data) => api.post('/auth/register', data),
   getAllUsers: () => api.get('/users'),
+  createUser: (data) => api.post('/users', data),
   getTechnicians: () => api.get('/users/technicians'),
   getUserById: (id) => api.get(`/users/${id}`),
   updateUserRole: (userId, role, action) =>

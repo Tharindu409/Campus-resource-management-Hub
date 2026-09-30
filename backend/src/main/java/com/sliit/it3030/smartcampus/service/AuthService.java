@@ -8,6 +8,7 @@ import com.sliit.it3030.smartcampus.repository.UserRepository;
 import com.sliit.it3030.smartcampus.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,6 +18,11 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final JwtService jwtService;
+    private final PasswordEncoder passwordEncoder;
+
+    public PasswordEncoder getPasswordEncoder() {
+        return passwordEncoder;
+    }
 
     // Get current user info
     public UserInfoDto getCurrentUserInfo(String userId) {

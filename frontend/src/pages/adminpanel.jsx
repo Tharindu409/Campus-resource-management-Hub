@@ -8,6 +8,14 @@ import { useAuth } from '../context/AuthContext';
 
 const PRIVILEGED_ROLES = ['ADMIN', 'STAFF', 'TECHNICIAN'];
 
+function formatTicketDate(value) {
+  if (!value) return 'Date unavailable';
+  const date = new Date(value);
+  return Number.isNaN(date.getTime())
+    ? 'Date unavailable'
+    : date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+}
+
 const getAllowedStatusOptions = (ticketStatus, role) => {
   const normalizedStatus = String(ticketStatus || 'OPEN').toUpperCase();
   const normalizedRole = String(role || 'USER').toUpperCase();
@@ -248,10 +256,17 @@ export const AdminPanelPage = () => {
         String(ticket.location || '').toLowerCase().includes(needle) ||
         String(ticket.description || '').toLowerCase().includes(needle) ||
         String(ticket.createdBy || '').toLowerCase().includes(needle) ||
-        String(getCreatedByDisplay(ticket.createdBy)).toLowerCase().includes(needle)
+        String(getCreatedByDisplay(ticket.createdBy)).toLowerCase().includes(needle) ||
+        String(ticket.priority || '').toLowerCase().includes(needle) ||
+        String(ticket.assignedTechnician || '').toLowerCase().includes(needle)
       )
     );
   });
+
+  useEffect(() => {
+    if (filteredTickets.some((ticket) => ticket.id === selectedTicketId)) return;
+    setSelectedTicketId(filteredTickets[0]?.id || '');
+  }, [filteredTickets, selectedTicketId]);
 
   const statusTotals = useMemo(() => {
     return tickets.reduce(
@@ -265,10 +280,12 @@ export const AdminPanelPage = () => {
   }, [tickets]);
 
   const statusCards = [
-    { label: 'Open', value: statusTotals.OPEN, icon: <Clock3 size={16} />, color: 'var(--status-pending)', bg: 'var(--status-pending-bg)' },
-    { label: 'In Progress', value: statusTotals.IN_PROGRESS, icon: <Wrench size={16} />, color: 'var(--primary)', bg: 'rgba(249,115,22,0.1)' },
-    { label: 'Resolved', value: statusTotals.RESOLVED, icon: <CheckCircle2 size={16} />, color: 'var(--status-approved)', bg: 'var(--status-approved-bg)' },
-    { label: 'Rejected', value: statusTotals.REJECTED, icon: <XCircle size={16} />, color: 'var(--status-rejected)', bg: 'var(--status-rejected-bg)' },
+    { status: 'ALL', label: 'All tickets', value: tickets.length, icon: <Shield size={16} />, color: 'var(--text-primary)', bg: 'var(--bg-section)' },
+    { status: 'OPEN', label: 'Open', value: statusTotals.OPEN, icon: <Clock3 size={16} />, color: 'var(--status-pending)', bg: 'var(--status-pending-bg)' },
+    { status: 'IN_PROGRESS', label: 'In progress', value: statusTotals.IN_PROGRESS, icon: <Wrench size={16} />, color: 'var(--primary)', bg: 'rgba(249,115,22,0.1)' },
+    { status: 'RESOLVED', label: 'Resolved', value: statusTotals.RESOLVED, icon: <CheckCircle2 size={16} />, color: 'var(--status-approved)', bg: 'var(--status-approved-bg)' },
+    { status: 'CLOSED', label: 'Closed', value: statusTotals.CLOSED, icon: <CheckCircle2 size={16} />, color: 'var(--text-secondary)', bg: 'var(--bg-section)' },
+    { status: 'REJECTED', label: 'Rejected', value: statusTotals.REJECTED, icon: <XCircle size={16} />, color: 'var(--status-rejected)', bg: 'var(--status-rejected-bg)' },
   ];
 
   return (
@@ -279,7 +296,7 @@ export const AdminPanelPage = () => {
             <p className="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-wider" style={{ borderColor: 'rgba(99, 102, 241, 0.22)', color: 'var(--accent-indigo)', background: 'rgba(99, 102, 241, 0.06)' }}>
               <Shield size={10} /> Admin Ticket Control
             </p>
-            <h1 className="mt-2 text-2xl font-black md:text-3xl text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-500 to-rose-500">Incident Operations Desk</h1>
+            <h1 className="mt-2 text-2xl font-black md:text-3xl text-transparent bg-clip-text bg-gradient-to-r from-[#E35336] via-[#C97A55] to-[#F4A460]">Incident Operations Desk</h1>
             
           </div>
 
@@ -293,17 +310,27 @@ export const AdminPanelPage = () => {
           </button>
         </div>
 
-        <div className="mt-4 grid gap-3 grid-cols-2 lg:grid-cols-4">
+        <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3 2xl:grid-cols-6">
           {statusCards.map((card) => (
-            <article key={card.label} className="rounded-2xl border p-3 flex items-center gap-3" style={{ borderColor: 'var(--border)', background: 'rgba(255,255,255,0.92)' }}>
+            <button
+              key={card.status}
+              type="button"
+              onClick={() => setStatusFilter(card.status)}
+              aria-pressed={statusFilter === card.status}
+              className="flex min-w-0 items-center gap-3 rounded-xl border p-3 text-left transition-colors hover:border-orange-300"
+              style={{
+                borderColor: statusFilter === card.status ? 'var(--primary)' : 'var(--border)',
+                background: statusFilter === card.status ? 'rgba(249,115,22,0.07)' : 'rgba(255,255,255,0.92)',
+              }}
+            >
               <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg" style={{ background: card.bg, color: card.color }}>
                 {card.icon}
               </div>
               <div className="min-w-0">
-                <p className="text-[10px] font-semibold uppercase tracking-wider leading-none" style={{ color: 'var(--text-secondary)' }}>{card.label}</p>
-                <p className="mt-1 text-xl font-black leading-none" style={{ color: card.color }}>{card.value}</p>
+                <p className="truncate text-xs font-semibold leading-none" style={{ color: 'var(--text-secondary)' }}>{card.label}</p>
+                <p className="mt-1 text-lg font-black leading-none" style={{ color: card.color }}>{card.value}</p>
               </div>
-            </article>
+            </button>
           ))}
         </div>
       </section>
@@ -314,39 +341,24 @@ export const AdminPanelPage = () => {
         </div>
       )}
 
-      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[360px_1fr]">
-        <div className="flex h-[75vh] flex-col rounded-3xl border p-5" style={{ borderColor: 'var(--border)', background: 'rgba(255,255,255,0.94)' }}>
-          <div className="mb-5 border-b pb-4" style={{ borderColor: 'var(--border)' }}>
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-              <div className="flex items-center gap-3 rounded-3xl bg-[rgba(15,23,42,0.04)] px-4 py-3">
+      <div className="mt-6 grid grid-cols-1 gap-5 lg:grid-cols-[minmax(18rem,0.85fr)_minmax(0,1.65fr)]">
+        <div className="flex h-[min(75vh,52rem)] min-h-[24rem] flex-col rounded-2xl border p-4" style={{ borderColor: 'var(--border)', background: 'rgba(255,255,255,0.96)' }}>
+          <div className="mb-4 border-b pb-4" style={{ borderColor: 'var(--border)' }}>
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <h2 className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>Ticket queue</h2>
+              <span className="text-xs tabular-nums" style={{ color: 'var(--text-secondary)' }}>{filteredTickets.length} of {tickets.length}</span>
+            </div>
+            <div className="flex items-center gap-3 rounded-lg border px-3 py-2.5" style={{ borderColor: 'var(--border)', background: 'var(--bg-section)' }}>
                 <Search size={18} style={{ color: 'var(--text-secondary)' }} />
                 <input
                   type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Search tickets by keyword, location, or user"
+                  aria-label="Search tickets"
+                  placeholder="Search tickets, location, requester, priority..."
                   className="w-full bg-transparent text-sm outline-none"
                   style={{ color: 'var(--text-primary)' }}
                 />
-              </div>
-              <div className="ml-auto flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  onClick={() => setSelectedTicketId('')}
-                  className="rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] transition-all hover:border-orange-300"
-                  style={{ borderColor: 'var(--border)', color: 'var(--text-secondary)' }}
-                >
-                  Clear selection
-                </button>
-                <button
-                  type="button"
-                  onClick={refreshSelected}
-                  className="rounded-full bg-[rgba(249,115,22,0.12)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] transition-all hover:bg-[rgba(249,115,22,0.18)]"
-                  style={{ color: 'var(--primary)' }}
-                >
-                  Refresh list
-                </button>
-              </div>
             </div>
           </div>
 
@@ -357,41 +369,47 @@ export const AdminPanelPage = () => {
               ))}
             </div>
           ) : (
-            <div className="custom-scrollbar flex-1 space-y-3 overflow-y-auto pr-1.5">
+            <div className="custom-scrollbar flex-1 space-y-2 overflow-y-auto pr-1.5">
               {filteredTickets.map((ticket) => (
                 <button
                   key={ticket.id}
                   type="button"
                   onClick={() => setSelectedTicketId(ticket.id)}
-                  className={`group w-full text-left transition-all duration-300 rounded-3xl border p-5 shadow-sm hover:-translate-y-0.5 ${
-                    selectedTicketId === ticket.id ? 'border-orange-300 bg-[rgba(249,115,22,0.08)]' : 'border-[rgba(15,23,42,0.08)] bg-white'
+                  aria-pressed={selectedTicketId === ticket.id}
+                  className={`group w-full rounded-xl border p-3.5 text-left transition-colors ${
+                    selectedTicketId === ticket.id ? 'border-orange-400 bg-orange-50' : 'border-[var(--border)] bg-white hover:bg-[var(--bg-section)]'
                   }`}
                 >
-                  <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                  <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="text-[10px] font-black uppercase tracking-[0.24em]" style={{ color: 'var(--text-secondary)' }}>{ticket.category || 'Ticket'}</p>
-                      <p className="mt-2 text-sm font-black leading-6 line-clamp-2 transition-colors group-hover:text-indigo-600" style={{ color: 'var(--text-primary)' }}>{ticket.location || 'No location provided'}</p>
+                      <p className="truncate text-sm font-bold" style={{ color: 'var(--text-primary)' }}>{ticket.category || 'General issue'}</p>
+                      <p className="mt-1 truncate text-xs" style={{ color: 'var(--text-secondary)' }}>{ticket.location || 'No location provided'}</p>
                     </div>
                     <TicketStatusBadge status={ticket.status} />
                   </div>
 
-                  <p className="mt-4 text-sm leading-6 line-clamp-3" style={{ color: 'var(--text-secondary)' }}>{ticket.description || 'No description provided.'}</p>
+                  <p className="mt-3 line-clamp-2 text-sm leading-5" style={{ color: 'var(--text-secondary)' }}>{ticket.description || 'No description provided.'}</p>
 
-                  <div className="mt-5 grid gap-3 sm:grid-cols-2 text-[11px] uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>
-                    <div className="rounded-2xl bg-[rgba(15,23,42,0.04)] p-3">
-                      Created by
-                      <p className="mt-2 font-semibold truncate" style={{ color: 'var(--text-primary)' }}>{getCreatedByDisplay(ticket.createdBy)}</p>
-                    </div>
-                    <div className="rounded-2xl bg-[rgba(15,23,42,0.04)] p-3">
-                      Technician
-                      <p className="mt-2 font-semibold text-primary truncate">{ticket.assignedTechnician ? (userDisplayMap[ticket.assignedTechnician] || ticket.assignedTechnician) : 'Unassigned'}</p>
-                    </div>
+                  <div className="mt-3 flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-t pt-3" style={{ borderColor: 'var(--border)' }}>
+                    <PriorityBadge priority={ticket.priority} />
+                    <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>{formatTicketDate(ticket.createdAt)}</span>
+                  </div>
+                  <div className="mt-2 flex min-w-0 items-center justify-between gap-3 text-xs">
+                    <span className="truncate" style={{ color: 'var(--text-secondary)' }}>By {getCreatedByDisplay(ticket.createdBy)}</span>
+                    <span className="max-w-[50%] truncate text-right" style={{ color: 'var(--text-secondary)' }}>
+                      {ticket.assignedTechnician ? `Assigned: ${userDisplayMap[ticket.assignedTechnician] || ticket.assignedTechnician}` : 'Unassigned'}
+                    </span>
                   </div>
                 </button>
               ))}
               {filteredTickets.length === 0 && (
-                <div className="rounded-3xl border border-dashed p-8 text-center" style={{ borderColor: 'var(--border)', background: 'var(--bg-section)' }}>
-                  <p className="text-sm font-semibold" style={{ color: 'var(--text-secondary)' }}>No tickets match your search.</p>
+                <div className="rounded-xl border border-dashed p-8 text-center" style={{ borderColor: 'var(--border)', background: 'var(--bg-section)' }}>
+                  <p className="text-sm font-semibold" style={{ color: 'var(--text-secondary)' }}>No tickets match these filters.</p>
+                  {(search || statusFilter !== 'ALL') && (
+                    <button type="button" onClick={() => { setSearch(''); setStatusFilter('ALL'); }} className="mt-3 text-sm font-semibold" style={{ color: 'var(--primary)' }}>
+                      Clear filters
+                    </button>
+                  )}
                 </div>
               )}
             </div>

@@ -201,7 +201,7 @@ export const TechnicianPanelPage = () => {
             <Wrench size={12} style={{ color: 'var(--accent-indigo)' }} />
             Technician Workspace
           </p>
-          <h1 className="text-3xl font-black uppercase tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-500 to-rose-500">Action Queue</h1>
+          <h1 className="text-3xl font-black uppercase tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#E35336] via-[#C97A55] to-[#F4A460]">Action Queue</h1>
           <p className="mt-1 text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
             Focused board for your assigned work and available tickets.
           </p>

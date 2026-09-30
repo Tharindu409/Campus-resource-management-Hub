@@ -1,5 +1,6 @@
 package com.sliit.it3030.smartcampus.service;
 
+import com.sliit.it3030.smartcampus.dto.auth.CreateUserRequest;
 import com.sliit.it3030.smartcampus.dto.auth.RoleUpdateRequest;
 import com.sliit.it3030.smartcampus.dto.auth.UserInfoDto;
 import com.sliit.it3030.smartcampus.exception.ConflictException;
@@ -51,6 +52,52 @@ public class UserService {
                         .thenComparing(User::getId))
                 .map(authService::mapToUserInfoDto)
                 .collect(Collectors.toList());
+    }
+
+    // Create a new local user (ADMIN only)
+    public UserInfoDto createUser(CreateUserRequest request) {
+        if (request == null) {
+            throw new ConflictException("User details are required");
+        }
+
+        String email = request.getEmail() == null ? "" : request.getEmail().trim().toLowerCase();
+        String name = request.getName() == null ? "" : request.getName().trim();
+        String password = request.getPassword() == null ? "" : request.getPassword();
+
+        if (email.isEmpty() || name.isEmpty() || password.isEmpty()) {
+            throw new ConflictException("Name, email and password are required");
+        }
+
+        if (!password.equals(request.getConfirmPassword())) {
+            throw new ConflictException("Passwords do not match");
+        }
+
+        if (userRepository.existsByEmail(email)) {
+            throw new ConflictException("An account with this email already exists");
+        }
+
+        Set<String> roles = request.getRoles() == null || request.getRoles().isEmpty()
+                ? Set.of(User.ROLE_USER)
+                : request.getRoles().stream()
+                        .filter(VALID_ROLES::contains)
+                        .collect(Collectors.toCollection(java.util.LinkedHashSet::new));
+
+        if (roles.isEmpty()) {
+            roles = Set.of(User.ROLE_USER);
+        }
+
+        User user = User.builder()
+                .name(name)
+                .email(email)
+                .password(authService.getPasswordEncoder().encode(password))
+                .roles(roles)
+                .provider("local")
+                .active(true)
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        User savedUser = userRepository.save(user);
+        return authService.mapToUserInfoDto(savedUser);
     }
 
     // Update user role (ADMIN only)

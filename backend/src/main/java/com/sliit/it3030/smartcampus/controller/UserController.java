@@ -1,5 +1,6 @@
 package com.sliit.it3030.smartcampus.controller;
 
+import com.sliit.it3030.smartcampus.dto.auth.CreateUserRequest;
 import com.sliit.it3030.smartcampus.dto.auth.RoleUpdateRequest;
 import com.sliit.it3030.smartcampus.dto.auth.UserInfoDto;
 import com.sliit.it3030.smartcampus.model.User;
@@ -56,6 +57,16 @@ public class UserController {
         }
 
         return ResponseEntity.ok(userService.getUserById(id));
+    }
+
+    /**
+     * POST /api/users
+     * Create a local user - ADMIN only
+     */
+    @PostMapping
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<UserInfoDto> createUser(@Valid @RequestBody CreateUserRequest request) {
+        return ResponseEntity.status(201).body(userService.createUser(request));
     }
 
     /**

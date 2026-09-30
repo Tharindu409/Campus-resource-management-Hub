@@ -1,14 +1,24 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { authApi } from '../api/authApi';
-import { Users, Shield, Wrench, User as UserIcon, RefreshCw, Search, Settings2, UserCheck, Trash2 } from 'lucide-react';
+import { Users, Shield, Wrench, User as UserIcon, RefreshCw, Search, Settings2, UserCheck, Trash2, Plus, X } from 'lucide-react';
 import toast from 'react-hot-toast';
+
+const roleOptions = [
+  { label: 'User', value: 'ROLE_USER' },
+  { label: 'Admin', value: 'ROLE_ADMIN' },
+  { label: 'Technician', value: 'ROLE_TECHNICIAN' },
+];
 
 export default function UserManagement() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState('ALL');
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [form, setForm] = useState({ name: '', email: '', password: '', confirmPassword: '' });
+  const [selectedRoles, setSelectedRoles] = useState(['ROLE_USER']);
+  const [submitting, setSubmitting] = useState(false);
 
   const { user: currentUser, isAdmin } = useAuth();
 
@@ -25,6 +35,65 @@ export default function UserManagement() {
   };
 
   useEffect(() => { loadUsers(); }, []);
+
+  const toggleRoleSelection = (roleValue) => {
+    setSelectedRoles((prev) => {
+      const exists = prev.includes(roleValue);
+      if (roleValue === 'ROLE_USER' && !exists) {
+        return ['ROLE_USER'];
+      }
+      if (exists) {
+        return prev.filter((role) => role !== roleValue);
+      }
+      return [...prev, roleValue];
+    });
+  };
+
+  const handleCreateUser = async (e) => {
+    e.preventDefault();
+
+    if (!form.name.trim() || !form.email.trim() || !form.password.trim()) {
+      toast.error('Please fill in all required fields.');
+      return;
+    }
+
+    if (form.password.length < 6) {
+      toast.error('Password must be at least 6 characters long.');
+      return;
+    }
+
+    if (form.password !== form.confirmPassword) {
+      toast.error('Passwords do not match.');
+      return;
+    }
+
+    if (selectedRoles.length === 0) {
+      toast.error('Select at least one role.');
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      await authApi.createUser({
+        name: form.name.trim(),
+        email: form.email.trim(),
+        password: form.password,
+        confirmPassword: form.confirmPassword,
+        roles: selectedRoles,
+      });
+      toast.success('User created successfully');
+      setShowAddModal(false);
+      setForm({ name: '', email: '', password: '', confirmPassword: '' });
+      setSelectedRoles(['ROLE_USER']);
+      loadUsers();
+    } catch (err) {
+      const fieldErrors = err.response?.data?.fieldErrors;
+      const validationMessage = fieldErrors ? Object.values(fieldErrors).join(' ') : null;
+      toast.error(validationMessage || err.response?.data?.message || 'Failed to create user');
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   const handleRoleToggle = async (userId, role, hasRole) => {
     const action = hasRole ? 'REMOVE' : 'ADD';
@@ -99,6 +168,130 @@ export default function UserManagement() {
     <div className="mx-auto max-w-7xl px-4 py-8 relative page-enter">
       <div className="pointer-events-none absolute right-0 top-0 h-[500px] w-[500px] rounded-full bg-[radial-gradient(circle,_rgba(249,115,22,0.1)_0%,_rgba(249,115,22,0)_70%)] opacity-60 blur-3xl shadow-none" />
 
+      {showAddModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-xl rounded-[28px] border shadow-2xl" style={{ borderColor: 'var(--border)', background: 'rgba(255,255,255,0.96)' }}>
+            <div className="flex items-center justify-between border-b px-6 py-4" style={{ borderColor: 'var(--border)' }}>
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em]" style={{ color: 'var(--text-secondary)' }}>Create Account</p>
+                <h2 className="mt-1 text-2xl font-black" style={{ color: 'var(--text-primary)' }}>Add New User</h2>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowAddModal(false)}
+                className="flex h-10 w-10 items-center justify-center rounded-full border transition-colors"
+                style={{ borderColor: 'var(--border)', background: 'var(--bg-primary)', color: 'var(--text-primary)' }}
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateUser} className="space-y-5 p-6">
+              <div className="grid gap-4 md:grid-cols-2">
+                <label className="space-y-2 md:col-span-2">
+                  <span className="text-[11px] font-black uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>Full Name</span>
+                  <input
+                    type="text"
+                    value={form.name}
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                    className="w-full rounded-2xl border px-4 py-3 text-sm outline-none transition-all"
+                    style={{ borderColor: 'var(--border)', background: 'var(--bg-primary)', color: 'var(--text-primary)' }}
+                    placeholder="Enter full name"
+                  />
+                </label>
+
+                <label className="space-y-2 md:col-span-2">
+                  <span className="text-[11px] font-black uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>Email Address</span>
+                  <input
+                    type="email"
+                    value={form.email}
+                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                    className="w-full rounded-2xl border px-4 py-3 text-sm outline-none transition-all"
+                    style={{ borderColor: 'var(--border)', background: 'var(--bg-primary)', color: 'var(--text-primary)' }}
+                    placeholder="name@campus.edu"
+                  />
+                </label>
+
+                <label className="space-y-2">
+                  <span className="text-[11px] font-black uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>Password</span>
+                  <input
+                    type="password"
+                    value={form.password}
+                    onChange={(e) => setForm({ ...form, password: e.target.value })}
+                    className="w-full rounded-2xl border px-4 py-3 text-sm outline-none transition-all"
+                    style={{ borderColor: 'var(--border)', background: 'var(--bg-primary)', color: 'var(--text-primary)' }}
+                    placeholder="At least 6 characters"
+                  />
+                </label>
+
+                <label className="space-y-2">
+                  <span className="text-[11px] font-black uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>Confirm Password</span>
+                  <input
+                    type="password"
+                    value={form.confirmPassword}
+                    onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
+                    className="w-full rounded-2xl border px-4 py-3 text-sm outline-none transition-all"
+                    style={{ borderColor: 'var(--border)', background: 'var(--bg-primary)', color: 'var(--text-primary)' }}
+                    placeholder="Repeat password"
+                  />
+                </label>
+              </div>
+
+              <div>
+                <p className="mb-3 text-[11px] font-black uppercase tracking-[0.18em]" style={{ color: 'var(--text-secondary)' }}>Assign Role</p>
+                <div className="flex flex-wrap gap-2">
+                  {roleOptions.map((role) => {
+                    const active = selectedRoles.includes(role.value);
+                    return (
+                      <button
+                        key={role.value}
+                        type="button"
+                        onClick={() => toggleRoleSelection(role.value)}
+                        className="rounded-xl border px-3 py-2 text-[10px] font-bold uppercase tracking-[0.12em] transition-all"
+                        style={
+                          active
+                            ? {
+                                background: 'rgba(249,115,22,0.12)',
+                                borderColor: 'var(--primary)',
+                                color: 'var(--primary)',
+                              }
+                            : {
+                                background: 'var(--bg-primary)',
+                                borderColor: 'var(--border)',
+                                color: 'var(--text-secondary)',
+                              }
+                        }
+                      >
+                        {role.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowAddModal(false)}
+                  className="rounded-xl border px-4 py-2.5 text-[10px] font-black uppercase tracking-[0.18em]"
+                  style={{ borderColor: 'var(--border)', background: 'var(--bg-primary)', color: 'var(--text-secondary)' }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="rounded-xl px-4 py-2.5 text-[10px] font-black uppercase tracking-[0.18em] text-white disabled:opacity-60"
+                  style={{ background: 'linear-gradient(135deg, var(--primary), var(--primary-hover))' }}
+                >
+                  {submitting ? 'Creating...' : 'Create User'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between relative z-10">
         <div>
           <p className="inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest mb-3" style={{ borderColor: 'var(--border)', background: 'var(--bg-primary)', color: 'var(--text-secondary)' }}>
@@ -111,14 +304,27 @@ export default function UserManagement() {
           </p>
         </div>
 
-        <button
-          onClick={loadUsers}
-          className="flex items-center gap-2 glass-panel px-5 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all hover:-translate-y-0.5 border"
-          style={{ color: 'var(--text-primary)', borderColor: 'var(--border)', background: 'var(--bg-primary)' }}
-        >
-          <RefreshCw size={14} style={{ color: 'var(--primary)' }} />
-          Refresh Registry
-        </button>
+        <div className="flex items-center gap-3">
+          {isAdmin() && (
+            <button
+              type="button"
+              onClick={() => setShowAddModal(true)}
+              className="flex items-center gap-2 rounded-xl px-5 py-3 text-[10px] font-bold uppercase tracking-widest text-white transition-all hover:-translate-y-0.5"
+              style={{ background: 'linear-gradient(135deg, var(--primary), var(--primary-hover))' }}
+            >
+              <Plus size={14} />
+              Add User
+            </button>
+          )}
+          <button
+            onClick={loadUsers}
+            className="flex items-center gap-2 glass-panel px-5 py-3 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all hover:-translate-y-0.5 border"
+            style={{ color: 'var(--text-primary)', borderColor: 'var(--border)', background: 'var(--bg-primary)' }}
+          >
+            <RefreshCw size={14} style={{ color: 'var(--primary)' }} />
+            Refresh Registry
+          </button>
+        </div>
       </div>
 
           <div className="grid gap-4 sm:grid-cols-3">
@@ -282,3 +488,5 @@ const RoleBtn = ({ icon, active, onClick, label }) => (
     {icon} {label}
   </button>
 );
+
+

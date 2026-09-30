@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { authApi } from '../api/authApi';
 import { API_BASE_URL } from '../api/httpClient';
 import { FaArrowLeft, FaGithub, FaGoogle, FaLock } from 'react-icons/fa';
-import heroImage from '../assets/hero.png';
+import brandImage from '../assets/logo/logo-full.png';
 
 export default function LocalLoginPage() {
   const location = useLocation();
@@ -45,7 +45,7 @@ export default function LocalLoginPage() {
   return (
     <div className="relative min-h-screen overflow-hidden px-4 py-10" style={{ background: 'var(--bg-primary)' }}>
       <div className="pointer-events-none absolute inset-0">
-        <div className="auth-photo-bg absolute inset-0" style={{ backgroundImage: `url(${heroImage})` }} />
+        <div className="auth-photo-bg absolute inset-0" style={{ backgroundImage: `url(${brandImage})` }} />
         <div className="auth-orb-a absolute -top-14 -left-16 h-72 w-72 rounded-full blur-3xl" style={{ background: 'rgba(249,115,22,0.18)' }} />
         <div className="auth-orb-b absolute bottom-0 right-0 h-80 w-80 rounded-full blur-3xl" style={{ background: 'rgba(253,186,116,0.24)' }} />
       </div>

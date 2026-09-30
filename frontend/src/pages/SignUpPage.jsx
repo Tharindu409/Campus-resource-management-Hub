@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authApi } from '../api/authApi';
 import { FaArrowLeft, FaCheckCircle, FaUserShield } from 'react-icons/fa';
-import heroImage from '../assets/hero.png';
-
+import brandImage from '../assets/logo/logo-full.png';
+ 
 export default function SignUpPage() {
   const navigate = useNavigate();
   const [form, setForm] = useState({
@@ -55,7 +55,7 @@ export default function SignUpPage() {
   return (
     <div className="relative min-h-screen overflow-hidden px-4 py-10" style={{ background: 'var(--bg-primary)' }}>
       <div className="pointer-events-none absolute inset-0">
-        <div className="signup-photo-bg absolute inset-0" style={{ backgroundImage: `url(${heroImage})` }} />
+        <div className="signup-photo-bg absolute inset-0" style={{ backgroundImage: `url(${brandImage})` }} />
         <div className="signup-orb-a absolute -top-14 right-0 h-72 w-72 rounded-full blur-3xl" style={{ background: 'rgba(249,115,22,0.2)' }} />
         <div className="signup-orb-b absolute bottom-0 -left-12 h-80 w-80 rounded-full blur-3xl" style={{ background: 'rgba(253,186,116,0.2)' }} />
       </div>

@@ -1,6 +1,18 @@
-# Java / Maven build artifacts
-target/
-.mvn/wrapper/maven-wrapper.jar
+# Environment variables
+.env
+.env.*
 
-# Runtime uploads / temp data
+# Secrets / local configuration
+application-local.properties
+application-prod.properties
+
+# Uploaded files
 uploads/
+
+# Build
+target/
+
+# IDE
+.idea/
+.vscode/
+*.iml

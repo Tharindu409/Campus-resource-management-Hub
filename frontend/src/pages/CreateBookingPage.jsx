@@ -357,9 +357,11 @@ export default function CreateBookingPage() {
         <form onSubmit={handleSubmit} className="glass-card p-6 space-y-6">
           {/* Resource Selector */}
           <div>
+
             <label className="block text-sm font-semibold mb-2 flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
               <MapPin size={14} style={{ color: 'var(--accent-mid)' }} /> Resource
             </label>
+            
             <select
               value={form.resourceId}
               onChange={handleResourceChange}

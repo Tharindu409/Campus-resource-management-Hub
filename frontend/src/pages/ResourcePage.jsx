@@ -155,7 +155,7 @@ export default function ResourcePage() {
   }
 
   return (
-    <div className="min-h-screen py-10 px-4 bg-gray-50">
+    <div className="min-h-screen py-10 px-4" style={{ background: 'var(--bg-primary)' }}>
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-8">
