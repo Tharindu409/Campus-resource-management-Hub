@@ -1,3 +1,5 @@
+import { API_BASE_URL } from '../api/httpClient'
+
 export async function uploadResourceImage(file) {
   if (!file) {
     throw new Error('Please select an image file')
@@ -19,7 +21,7 @@ export async function uploadResourceImage(file) {
 
   const token = localStorage.getItem('token')
 
-  const response = await fetch('http://localhost:8091/api/uploads/resources', {
+  const response = await fetch(`${API_BASE_URL}/api/uploads/resources`, {
     method: 'POST',
     headers: token
       ? {
