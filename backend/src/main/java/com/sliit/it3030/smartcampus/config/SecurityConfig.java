@@ -22,6 +22,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -47,26 +48,39 @@ public class SecurityConfig {
                                 new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED),
                                 new AntPathRequestMatcher("/api/**")))
                 .authorizeHttpRequests(auth -> auth
+
+                        // Allow CORS preflight requests
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                        // Authentication
                         .requestMatchers("/api/auth/github").permitAll()
                         .requestMatchers("/api/auth/login").permitAll()
                         .requestMatchers("/api/auth/register").permitAll()
                         .requestMatchers("/api/auth/me").authenticated()
+
+                        // OAuth2
                         .requestMatchers("/login/**").permitAll()
                         .requestMatchers("/oauth2/**").permitAll()
 
-                        // ✅ ADD THIS LINE (ONLY CHANGE)
+                        // Uploaded images
                         .requestMatchers("/uploads/**").permitAll()
 
+                        // Resources
                         .requestMatchers(HttpMethod.GET, "/api/resources/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/resources/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/resources/**").hasAuthority("ROLE_ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/resources/**").hasAuthority("ROLE_ADMIN")
+
+                        // Other modules
                         .requestMatchers("/api/bookings/**").authenticated()
                         .requestMatchers("/api/tickets/**").authenticated()
                         .requestMatchers("/api/notifications/**").authenticated()
+
+                        // Users
                         .requestMatchers(HttpMethod.GET, "/api/users").hasAuthority("ROLE_ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/users").hasAuthority("ROLE_ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/users/*/role").hasAuthority("ROLE_ADMIN")
+
                         .anyRequest().authenticated())
                 .addFilterBefore(
                         jwtAuthenticationFilter,
@@ -74,7 +88,8 @@ public class SecurityConfig {
 
         if (clientRegistrationRepositoryProvider.getIfAvailable() != null) {
             http.oauth2Login(oauth2 -> oauth2
-                    .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
+                    .userInfoEndpoint(userInfo ->
+                            userInfo.userService(customOAuth2UserService))
                     .successHandler(oAuth2LoginSuccessHandler));
         }
 
@@ -83,21 +98,33 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
+
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedOrigins(List.of("http://localhost:5173"));
+        config.setAllowedOrigins(List.of(
+                "http://localhost:5173",
+                "http://127.0.0.1:5173",
+                "https://campus-resource-management-hub.vercel.app"
+        ));
+
         config.setAllowedMethods(List.of(
-                "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of(
-                "Authorization",
-                "Content-Type",
-                "Accept",
-                "Origin",
-                "X-Requested-With"));
+                "GET",
+                "POST",
+                "PUT",
+                "PATCH",
+                "DELETE",
+                "OPTIONS"
+        ));
+
+        config.setAllowedHeaders(List.of("*"));
+
         config.setAllowCredentials(true);
+
         config.setMaxAge(3600L);
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        UrlBasedCorsConfigurationSource source =
+                new UrlBasedCorsConfigurationSource();
+
         source.registerCorsConfiguration("/**", config);
 
         return source;
