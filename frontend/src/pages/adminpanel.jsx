@@ -296,7 +296,7 @@ export const AdminPanelPage = () => {
             <p className="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-wider" style={{ borderColor: 'rgba(99, 102, 241, 0.22)', color: 'var(--accent-indigo)', background: 'rgba(99, 102, 241, 0.06)' }}>
               <Shield size={10} /> Admin Ticket Control
             </p>
-            <h1 className="mt-2 text-2xl font-black md:text-3xl text-transparent bg-clip-text bg-gradient-to-r from-[#E35336] via-[#C97A55] to-[#F4A460]">Incident Operations Desk</h1>
+            <h1 className="mt-2 text-2xl font-black md:text-3xl text-transparent bg-clip-text bg-gradient-to-r from-[#6D28D9] via-[#8B5CF6] to-[#C4B5FD]">Incident Operations Desk</h1>
             
           </div>
 

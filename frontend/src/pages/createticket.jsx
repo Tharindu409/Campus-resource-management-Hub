@@ -227,7 +227,7 @@ export const CreateTicketPage = () => {
               <Sparkles size={12} style={{ color: 'var(--primary)' }} />
               Incident Desk
             </p>
-            <h1 className="text-4xl font-extrabold uppercase tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-orange-500 via-rose-500 to-indigo-600 md:text-5xl">Create Ticket</h1>
+            <h1 className="text-4xl font-extrabold uppercase tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#6D28D9] via-[#8B5CF6] to-[#C4B5FD] md:text-5xl">Create Ticket</h1>
             <p className="mt-4 max-w-md text-sm leading-relaxed font-medium" style={{ color: 'var(--text-secondary)' }}>
               Report maintenance issues with clear details so technicians can respond faster and accurately.
             </p>

@@ -15,53 +15,53 @@
 :root {
   color-scheme: light;
 
-  --primary: #e35336;
-  --primary-strong: #d4462d;
-  --primary-hover: #d4462d;
-  --primary-soft: #fff0eb;
-  --primary-light: #f7b69d;
+  --primary: #7c3aed;
+  --primary-strong: #6d28d9;
+  --primary-hover: #5b21b6;
+  --primary-soft: #f3e8ff;
+  --primary-light: #ddd6fe;
 
-  --secondary: #f4a460;
-  --accent-indigo: #7c5a42;
-  --accent-purple: #a0522d;
-  --accent-rose: #c76a47;
-  --accent-cyan: #c97a55;
-  --secondary-soft: #fff4ea;
-  --success: #0f9f6e;
-  --success-soft: #e8fff7;
-  --warning: #d97706;
-  --warning-soft: #fff4d6;
+  --secondary: #a78bfa;
+  --accent-indigo: #6d28d9;
+  --accent-purple: #8b5cf6;
+  --accent-rose: #c084fc;
+  --accent-cyan: #a78bfa;
+  --secondary-soft: #f5f3ff;
+  --success: #10b981;
+  --success-soft: #ecfdf5;
+  --warning: #b45309;
+  --warning-soft: #fef3c7;
   --danger: #dc2626;
   --danger-soft: #ffe7e7;
-  --info: #0ea5e9;
-  --info-soft: #e0f7ff;
+  --info: #8b5cf6;
+  --info-soft: #f3e8ff;
 
-  --bg-primary: #f3f3f1;
-  --bg-page: #efefec;
-  --bg-section: #f7f5f1;
+  --bg-primary: #f7f5ff;
+  --bg-page: #f3f0ff;
+  --bg-section: #faf7ff;
   --surface: #ffffff;
   --surface-strong: #ffffff;
-  --surface-muted: #f3efe8;
-  --surface-hover: #fff7ed;
+  --surface-muted: #f3f0ff;
+  --surface-hover: #f1ebff;
 
-  --text-primary: #1f1f1f;
-  --text-secondary: #3c3c3c;
-  --muted: #6b7280;
-  --border: #e8e2d9;
-  --focus-ring: rgba(227, 83, 54, 0.22);
+  --text-primary: #1f1632;
+  --text-secondary: #4a4660;
+  --muted: #6f6b82;
+  --border: #e9e1f8;
+  --focus-ring: rgba(124, 58, 237, 0.22);
 
-  --accent-start: #e35336;
-  --accent-mid: #f5f5dc;
-  --accent-end: #f4a460;
+  --accent-start: #7c3aed;
+  --accent-mid: #efe7ff;
+  --accent-end: #a78bfa;
 
-  --accent-sienna: #a0522d;
-  --accent-peach: #f4a460;
-  --accent-ivory: #f5f5dc;
-  --accent-copper: #c97a55;
+  --accent-sienna: #6d28d9;
+  --accent-peach: #c4b5fd;
+  --accent-ivory: #f5f3ff;
+  --accent-copper: #a78bfa;
 
-  --status-pending: #b45309;
-  --status-pending-bg: rgba(245, 158, 11, 0.12);
-  --status-pending-border: rgba(217, 119, 6, 0.28);
+  --status-pending: #7c3aed;
+  --status-pending-bg: rgba(124, 58, 237, 0.12);
+  --status-pending-border: rgba(124, 58, 237, 0.26);
 
   --status-approved: #047857;
   --status-approved-bg: rgba(16, 185, 129, 0.12);
@@ -75,8 +75,8 @@
   --status-cancelled-bg: rgba(100, 116, 139, 0.12);
   --status-cancelled-border: rgba(71, 85, 105, 0.28);
 
-  --shadow-soft: 0 18px 50px rgba(31, 31, 31, 0.08);
-  --shadow-card: 0 12px 28px rgba(31, 31, 31, 0.06);
+  --shadow-soft: 0 18px 50px rgba(76, 58, 122, 0.08);
+  --shadow-card: 0 12px 28px rgba(76, 58, 122, 0.06);
 }
 
 * {
@@ -90,7 +90,7 @@ html {
 body {
   margin: 0;
   min-width: 320px;
-  background: #f4f2ee;
+  background: #f6f3ff;
   color: var(--text-primary);
   font-family: var(--font-sans);
   font-size: 1rem;
@@ -138,7 +138,7 @@ textarea {
   -webkit-backdrop-filter: blur(12px);
   z-index: 10;
   overflow: hidden;
-  background: linear-gradient(180deg, rgba(227, 83, 54, 0.12), rgba(255,255,255,0.96));
+  background: linear-gradient(180deg, rgba(124, 58, 237, 0.12), rgba(255,255,255,0.96));
 }
 
 .admin-sidebar-nav {
@@ -200,7 +200,7 @@ button[class~="p-3.5"] {
   .admin-sidebar {
     position: static;
     height: auto;
-    background: linear-gradient(180deg, rgba(227, 83, 54, 0.08), rgba(255,255,255,0.96));
+    background: linear-gradient(180deg, rgba(124, 58, 237, 0.08), rgba(255,255,255,0.96));
   }
 }
 

@@ -1,23 +1,27 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { API_BASE_URL } from '../api/httpClient';
+import { reviewApi } from '../api/reviewApi';
 import {
   FaArrowRight,
   FaBell,
   FaCalendarCheck,
   FaCheckCircle,
+  FaEdit,
   FaEnvelope,
   FaGlobe,
   FaLayerGroup,
   FaLock,
   FaPhoneAlt,
   FaShieldAlt,
+  FaStar,
   FaTicketAlt,
+  FaTrash,
   FaUsers,
 } from 'react-icons/fa';
 
-import logoMark from '../assets/logo/logo-full.png';
+import logoMark from '../assets/logo/smart-campus-logo.jpg';
  
 
 const HIGHLIGHTS = [
@@ -68,23 +72,12 @@ const TIMELINE = [
   },
 ];
 
-const REVIEWS = [
-  {
-    name: 'A. Perera',
-    role: 'Operations Coordinator',
-    quote: 'The workflow is clear and reliable. We cut manual follow-up time drastically in one semester.',
-  },
-  {
-    name: 'R. Silva',
-    role: 'Lab Technician',
-    quote: 'Ticket updates and assignment visibility made our maintenance turnaround much faster.',
-  },
-  {
-    name: 'S. Fernando',
-    role: 'Department Admin',
-    quote: 'Resource scheduling conflicts dropped, and approvals are far easier to monitor now.',
-  },
-];
+const EMPTY_REVIEW_FORM = {
+  name: '',
+  role: '',
+  rating: 5,
+  message: '',
+};
 
 const NAV_TABS = [
   { label: 'Features', href: '#features' },
@@ -96,6 +89,26 @@ const NAV_TABS = [
 export default function LoginPage() {
   const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
+  const [reviews, setReviews] = useState([]);
+  const [activeReviewIndex, setActiveReviewIndex] = useState(0);
+  const [reviewForm, setReviewForm] = useState(EMPTY_REVIEW_FORM);
+  const [editingReviewId, setEditingReviewId] = useState(null);
+  const [isSavingReview, setIsSavingReview] = useState(false);
+  const [loadingReviews, setLoadingReviews] = useState(true);
+
+  const loadReviews = async () => {
+    try {
+      setLoadingReviews(true);
+      const response = await reviewApi.getReviews();
+      const reviewList = Array.isArray(response?.data) ? response.data : [];
+      setReviews(reviewList);
+      setActiveReviewIndex((current) => (reviewList.length === 0 ? 0 : Math.min(current, reviewList.length - 1)));
+    } catch (error) {
+      setReviews([]);
+    } finally {
+      setLoadingReviews(false);
+    }
+  };
 
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -112,17 +125,95 @@ export default function LoginPage() {
     }
   }, [isAuthenticated, user, navigate]);
 
+  useEffect(() => {
+    loadReviews();
+  }, []);
+
+  useEffect(() => {
+    if (reviews.length < 2) return undefined;
+
+    const intervalId = setInterval(() => {
+      setActiveReviewIndex((current) => (current + 1) % reviews.length);
+    }, 4200);
+
+    return () => clearInterval(intervalId);
+  }, [reviews.length]);
+
   const handleOAuthLogin = (provider) => {
     window.location.href = `${API_BASE_URL}/oauth2/authorization/${provider}`;
   };
+
+  const handleReviewFieldChange = (event) => {
+    const { name, value } = event.target;
+    setReviewForm((current) => ({
+      ...current,
+      [name]: name === 'rating' ? Number(value) : value,
+    }));
+  };
+
+  const handleReviewSubmit = async (event) => {
+    event.preventDefault();
+
+    if (!reviewForm.name.trim() || !reviewForm.message.trim()) {
+      alert('Please provide your name and review message.');
+      return;
+    }
+
+    try {
+      setIsSavingReview(true);
+
+      if (editingReviewId) {
+        const response = await reviewApi.updateReview(editingReviewId, reviewForm);
+        const updatedReview = response?.data;
+        setReviews((current) => current.map((review) => (review.id === updatedReview.id ? updatedReview : review)));
+      } else {
+        const response = await reviewApi.addReview(reviewForm);
+        const newReview = response?.data;
+        setReviews((current) => [newReview, ...current]);
+      }
+
+      setReviewForm(EMPTY_REVIEW_FORM);
+      setEditingReviewId(null);
+      await loadReviews();
+    } catch (error) {
+      alert(error?.response?.data?.message || 'Unable to save the review right now.');
+    } finally {
+      setIsSavingReview(false);
+    }
+  };
+
+  const handleEditReview = (review) => {
+    setEditingReviewId(review.id);
+    setReviewForm({
+      name: review.name || '',
+      role: review.role || '',
+      rating: review.rating || 5,
+      message: review.message || '',
+    });
+    window.scrollTo({ top: document.getElementById('reviews')?.offsetTop || 0, behavior: 'smooth' });
+  };
+
+  const handleDeleteReview = async (reviewId) => {
+    if (!window.confirm('Delete this review?')) return;
+
+    try {
+      await reviewApi.deleteReview(reviewId);
+      setReviews((current) => current.filter((review) => review.id !== reviewId));
+      setActiveReviewIndex(0);
+    } catch (error) {
+      alert(error?.response?.data?.message || 'Unable to delete the review.');
+    }
+  };
+
+  const activeReview = reviews[activeReviewIndex] || null;
 
   return (
     <div className="relative flex min-h-screen flex-col overflow-x-clip" style={{ background: 'var(--bg-primary)' }}>
       <div className="pointer-events-none absolute inset-0 overflow-clip">
         <div className="landing-background-image absolute inset-0" />
-        <div className="mega-orb-a absolute -top-36 -left-36 h-[34rem] w-[34rem] rounded-full" style={{ background: 'radial-gradient(circle at 30% 30%, rgba(249,115,22,0.46), rgba(249,115,22,0.08) 55%, transparent 75%)' }} />
-        <div className="mega-orb-b absolute top-[18%] right-[-10rem] h-[32rem] w-[32rem] rounded-full" style={{ background: 'radial-gradient(circle at 60% 40%, rgba(253,186,116,0.42), rgba(253,186,116,0.08) 58%, transparent 78%)' }} />
-        <div className="mega-orb-c absolute bottom-[-14rem] left-[18%] h-[30rem] w-[30rem] rounded-full" style={{ background: 'radial-gradient(circle at 50% 50%, rgba(249,115,22,0.28), rgba(249,115,22,0.06) 62%, transparent 80%)' }} />
+        <div className="mega-orb-a absolute -top-36 -left-36 h-[34rem] w-[34rem] rounded-full" style={{ background: 'radial-gradient(circle at 30% 30%, rgba(124,58,237,0.42), rgba(168,85,247,0.08) 55%, transparent 75%)' }} />
+        <div className="mega-orb-b absolute top-[18%] right-[-10rem] h-[32rem] w-[32rem] rounded-full" style={{ background: 'radial-gradient(circle at 60% 40%, rgba(196,181,253,0.44), rgba(196,181,253,0.08) 58%, transparent 78%)' }} />
+        <div className="mega-orb-c absolute bottom-[-14rem] left-[18%] h-[30rem] w-[30rem] rounded-full" style={{ background: 'radial-gradient(circle at 50% 50%, rgba(139,92,246,0.26), rgba(167,139,250,0.06) 62%, transparent 80%)' }} />
         <div className="radar-wrap absolute left-1/2 top-[20%] -translate-x-1/2">
           <span className="radar-ring" />
           <span className="radar-ring radar-ring-delay" />
@@ -371,56 +462,159 @@ export default function LoginPage() {
         </section>
 
         <section id="reviews" className="stage-enter-late mt-8 rounded-3xl border p-6 md:p-8" style={{ borderColor: 'var(--border)', background: 'rgba(255,255,255,0.92)' }}>
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[11px] font-black uppercase tracking-wider" style={{ borderColor: 'rgba(249,115,22,0.28)', color: 'var(--primary)', background: 'rgba(249,115,22,0.08)' }}>
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[11px] font-black uppercase tracking-wider" style={{ borderColor: 'rgba(124,58,237,0.25)', color: 'var(--primary)', background: 'rgba(124,58,237,0.08)' }}>
             <FaUsers size={10} /> Reviews
           </div>
-          <div className="grid gap-4 md:grid-cols-3">
-            {REVIEWS.map((review) => (
-              <article key={review.name} className="rounded-2xl border p-5" style={{ borderColor: 'var(--border)', background: 'var(--bg-section)' }}>
-                <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-                  "{review.quote}"
-                </p>
-                <div className="mt-4 border-t pt-3" style={{ borderColor: 'var(--border)' }}>
-                  <p className="text-sm font-black" style={{ color: 'var(--text-primary)' }}>{review.name}</p>
-                  <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{review.role}</p>
+
+          <div className="grid gap-6 lg:grid-cols-[1.3fr_0.7fr]">
+            <div className="rounded-2xl border p-5" style={{ borderColor: 'var(--border)', background: 'var(--bg-section)' }}>
+              {loadingReviews ? (
+                <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Loading reviews…</p>
+              ) : activeReview ? (
+                <div className="review-slide-enter">
+                  <div className="mb-3 flex items-center gap-1 text-amber-500">
+                    {Array.from({ length: 5 }).map((_, index) => (
+                      <FaStar key={index} size={14} className={index < activeReview.rating ? 'opacity-100' : 'opacity-25'} />
+                    ))}
+                  </div>
+                  <p className="text-lg leading-relaxed" style={{ color: 'var(--text-primary)' }}>
+                    “{activeReview.message}”
+                  </p>
+                  <div className="mt-5 flex items-center justify-between gap-3 border-t pt-4" style={{ borderColor: 'var(--border)' }}>
+                    <div>
+                      <p className="text-sm font-black" style={{ color: 'var(--text-primary)' }}>{activeReview.name}</p>
+                      <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>{activeReview.role || 'Campus user'}</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button type="button" onClick={() => handleEditReview(activeReview)} className="rounded-lg border px-2 py-1.5 text-xs font-semibold" style={{ borderColor: 'var(--border)', color: 'var(--text-secondary)' }}>
+                        <FaEdit size={12} className="inline-block" />
+                      </button>
+                      <button type="button" onClick={() => handleDeleteReview(activeReview.id)} className="rounded-lg border px-2 py-1.5 text-xs font-semibold" style={{ borderColor: 'var(--border)', color: 'var(--text-secondary)' }}>
+                        <FaTrash size={12} className="inline-block" />
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              </article>
-            ))}
+              ) : (
+                <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>No reviews yet. Be the first to share your experience.</p>
+              )}
+
+              {reviews.length > 1 && (
+                <div className="mt-5 flex items-center gap-2">
+                  {reviews.map((review, index) => (
+                    <button
+                      key={review.id || `${review.name}-${index}`}
+                      type="button"
+                      onClick={() => setActiveReviewIndex(index)}
+                      className="h-2.5 rounded-full transition-all"
+                      style={{
+                        width: index === activeReviewIndex ? '2rem' : '0.8rem',
+                        background: index === activeReviewIndex ? 'var(--primary)' : 'rgba(124,58,237,0.25)',
+                      }}
+                      aria-label={`View review ${index + 1}`}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <form onSubmit={handleReviewSubmit} className="rounded-2xl border p-5" style={{ borderColor: 'var(--border)', background: 'var(--bg-section)' }}>
+              <div className="mb-4 flex items-center justify-between">
+                <p className="text-sm font-black uppercase tracking-wider" style={{ color: 'var(--primary)' }}>
+                  {editingReviewId ? 'Update your review' : 'Share your experience'}
+                </p>
+                {editingReviewId && (
+                  <button type="button" onClick={() => { setEditingReviewId(null); setReviewForm(EMPTY_REVIEW_FORM); }} className="text-xs font-semibold" style={{ color: 'var(--text-secondary)' }}>
+                    Cancel
+                  </button>
+                )}
+              </div>
+
+              <div className="space-y-3">
+                <input
+                  name="name"
+                  value={reviewForm.name}
+                  onChange={handleReviewFieldChange}
+                  placeholder="Your name"
+                  className="w-full rounded-xl border px-3 py-2.5 text-sm outline-none"
+                  style={{ borderColor: 'var(--border)', background: 'white', color: 'var(--text-primary)' }}
+                />
+                <input
+                  name="role"
+                  value={reviewForm.role}
+                  onChange={handleReviewFieldChange}
+                  placeholder="Role or department"
+                  className="w-full rounded-xl border px-3 py-2.5 text-sm outline-none"
+                  style={{ borderColor: 'var(--border)', background: 'white', color: 'var(--text-primary)' }}
+                />
+                <select
+                  name="rating"
+                  value={reviewForm.rating}
+                  onChange={handleReviewFieldChange}
+                  className="w-full rounded-xl border px-3 py-2.5 text-sm outline-none"
+                  style={{ borderColor: 'var(--border)', background: 'white', color: 'var(--text-primary)' }}
+                >
+                  <option value={5}>5 - Excellent</option>
+                  <option value={4}>4 - Very Good</option>
+                  <option value={3}>3 - Good</option>
+                  <option value={2}>2 - Fair</option>
+                  <option value={1}>1 - Poor</option>
+                </select>
+                <textarea
+                  name="message"
+                  value={reviewForm.message}
+                  onChange={handleReviewFieldChange}
+                  placeholder="Tell us how the app helped you..."
+                  rows={5}
+                  className="w-full rounded-xl border px-3 py-2.5 text-sm outline-none resize-none"
+                  style={{ borderColor: 'var(--border)', background: 'white', color: 'var(--text-primary)' }}
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={isSavingReview}
+                className="mt-4 w-full rounded-xl px-4 py-3 text-sm font-semibold text-white transition-all disabled:opacity-60"
+                style={{ background: 'linear-gradient(135deg, var(--primary), var(--primary-hover))' }}
+              >
+                {isSavingReview ? 'Saving…' : editingReviewId ? 'Update Review' : 'Submit Review'}
+              </button>
+            </form>
           </div>
         </section>
       </main>
 
-      <footer className="relative z-10 mt-auto border-t-2" style={{ borderColor: 'var(--primary)', background: 'rgba(255,255,255,0.96)' }}>
+      <footer className="relative z-10 mt-auto border-t-2" style={{ borderColor: '#8b5cf6', background: 'linear-gradient(180deg, #2a1747 0%, #1d1033 100%)' }}>
         <div className="mx-auto grid max-w-7xl gap-8 px-6 py-8 md:grid-cols-[minmax(0,1.5fr)_0.7fr_0.8fr]">
           <div>
             <img src={logoMark} alt="Smart Campus Resources Hub" className="h-14 w-auto" draggable={false} />
-            <p className="mt-3 max-w-md text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+            <p className="mt-3 max-w-md text-sm leading-relaxed text-white/80">
               One place to coordinate campus resources, maintenance, and communication.
             </p>
           </div>
 
           <nav aria-label="Footer" >
-            <p className="text-xs font-black uppercase tracking-wider" style={{ color: 'var(--text-primary)' }}>Explore</p>
-            <ul className="mt-3 space-y-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
+            <p className="text-xs font-black uppercase tracking-wider text-white">Explore</p>
+            <ul className="mt-3 space-y-2 text-sm text-white/75">
               {NAV_TABS.map((tab) => (
                 <li key={tab.label}>
-                  <a href={tab.href} className="transition-colors hover:text-orange-600">{tab.label}</a>
+                  <a href={tab.href} className="transition-colors hover:text-white">{tab.label}</a>
                 </li>
               ))}
-              <li><button onClick={() => navigate('/login/local')} className="text-left transition-colors hover:text-orange-600">Login</button></li>
+              <li><button onClick={() => navigate('/login/local')} className="text-left transition-colors hover:text-white">Login</button></li>
             </ul>
           </nav>
 
           <div>
-            <p className="text-xs font-black uppercase tracking-wider" style={{ color: 'var(--text-primary)' }}>Contact</p>
-            <ul className="mt-3 space-y-3 text-sm" style={{ color: 'var(--text-secondary)' }}>
-              <li className="flex items-center gap-2"><FaEnvelope size={13} style={{ color: 'var(--primary)' }} /> support@smartcampus.edu</li>
-              <li className="flex items-center gap-2"><FaPhoneAlt size={13} style={{ color: 'var(--primary)' }} /> +94 11 123 4567</li>
+            <p className="text-xs font-black uppercase tracking-wider text-white">Contact</p>
+            <ul className="mt-3 space-y-3 text-sm text-white/75">
+              <li className="flex items-center gap-2"><FaEnvelope size={13} style={{ color: '#d8b4fe' }} /> support@smartcampus.edu</li>
+              <li className="flex items-center gap-2"><FaPhoneAlt size={13} style={{ color: '#d8b4fe' }} /> +94 11 123 4567</li>
             </ul>
           </div>
         </div>
-        <div className="border-t" style={{ borderColor: 'var(--border)', background: 'var(--bg-section)' }}>
-          <div className="mx-auto flex max-w-7xl flex-col gap-1 px-6 py-3 text-xs sm:flex-row sm:items-center sm:justify-between" style={{ color: 'var(--text-secondary)' }}>
+        <div className="border-t" style={{ borderColor: 'rgba(255,255,255,0.12)', background: 'rgba(16, 9, 25, 0.75)' }}>
+          <div className="mx-auto flex max-w-7xl flex-col gap-1 px-6 py-3 text-xs sm:flex-row sm:items-center sm:justify-between text-white/70">
             <span>Smart Campus Resources Hub © 2026</span>
             <span>Campus operations, connected.</span>
           </div>
@@ -430,9 +624,14 @@ export default function LoginPage() {
       <style>
         {`
         .landing-background-image {
-          background-image: url('/landing-background.jpg');
+          background-image:
+            linear-gradient(120deg, rgba(247, 245, 255, 0.82), rgba(243, 240, 255, 0.32)),
+            url('https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1600&q=80');
           background-size: cover;
           background-position: center;
+          background-repeat: no-repeat;
+          opacity: 0.9;
+          filter: saturate(0.82) contrast(1.06);
         }
 
         .stage-enter {
@@ -536,6 +735,10 @@ export default function LoginPage() {
           animation: cueFloat 1.9s ease-in-out infinite;
         }
 
+        .review-slide-enter {
+          animation: reviewSlideIn 0.45s ease-out;
+        }
+
         @keyframes stageIn {
           to {
             opacity: 1;
@@ -590,6 +793,17 @@ export default function LoginPage() {
         @keyframes cueFloat {
           0%, 100% { transform: translateY(0); }
           50% { transform: translateY(5px); }
+        }
+
+        @keyframes reviewSlideIn {
+          from {
+            opacity: 0;
+            transform: translateY(12px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
         }
 
         @media (prefers-reduced-motion: reduce) {

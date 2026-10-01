@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { authApi } from '../api/authApi';
 import { API_BASE_URL } from '../api/httpClient';
 import { FaArrowLeft, FaGithub, FaGoogle, FaLock } from 'react-icons/fa';
-import brandImage from '../assets/logo/logo-full.png';
+import brandImage from '../assets/logo/smart-campus-logo.jpg';
 
 export default function LocalLoginPage() {
   const location = useLocation();

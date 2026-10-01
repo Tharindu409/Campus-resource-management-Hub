@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authApi } from '../api/authApi';
 import { FaArrowLeft, FaCheckCircle, FaUserShield } from 'react-icons/fa';
-import brandImage from '../assets/logo/logo-full.png';
+import brandImage from '../assets/logo/smart-campus-logo.jpg';
  
 export default function SignUpPage() {
   const navigate = useNavigate();

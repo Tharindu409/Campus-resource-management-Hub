@@ -15,7 +15,7 @@ import {
   Package,
 } from 'lucide-react';
 import NotificationBell from './notifications/NotificationBell';
-import logoMark from '../assets/logo/logo-full.png';
+import logoMark from '../assets/logo/smart-campus-logo.jpg';
 
 const ICON = 16;
 
