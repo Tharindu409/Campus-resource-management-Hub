@@ -9,27 +9,47 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let mounted = true;
+
+    const loadCurrentUser = async () => {
+      try {
+        const response = await authApi.getMe();
+
+        if (mounted) {
+          setUser(response.data);
+        }
+      } catch (error) {
+        console.error('Failed to load user:', error);
+
+        // Clear token only when authentication is actually invalid
+        if (error?.response?.status === 401 || error?.response?.status === 403) {
+          localStorage.removeItem('token');
+
+          if (mounted) {
+            setToken(null);
+            setUser(null);
+          }
+        }
+      } finally {
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    };
+
     if (token) {
+      setLoading(true);
       loadCurrentUser();
     } else {
       setLoading(false);
     }
+
+    return () => {
+      mounted = false;
+    };
   }, [token]);
 
-  const loadCurrentUser = async () => {
-    try {
-      const response = await authApi.getMe();
-      setUser(response.data);
-    } catch (error) {
-      console.error('Failed to load user:', error);
-      logout();
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const loginWithToken = (jwtToken) => {
-    setLoading(true);
     localStorage.setItem('token', jwtToken);
     setToken(jwtToken);
   };
@@ -40,20 +60,25 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
-  const isAdmin = () => user?.roles?.includes('ROLE_ADMIN') ?? false;
-  const isTechnician = () => user?.roles?.includes('ROLE_TECHNICIAN') ?? false;
+  const isAdmin = () =>
+    user?.roles?.includes('ROLE_ADMIN') ?? false;
+
+  const isTechnician = () =>
+    user?.roles?.includes('ROLE_TECHNICIAN') ?? false;
 
   return (
-    <AuthContext.Provider value={{
-      user,
-      token,
-      loading,
-      loginWithToken,
-      logout,
-      isAdmin,
-      isTechnician,
-      isAuthenticated: !!user,
-    }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        token,
+        loading,
+        loginWithToken,
+        logout,
+        isAdmin,
+        isTechnician,
+        isAuthenticated: !!user,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -61,6 +86,10 @@ export function AuthProvider({ children }) {
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) throw new Error('useAuth must be used within AuthProvider');
+
+  if (!context) {
+    throw new Error('useAuth must be used within AuthProvider');
+  }
+
   return context;
 };
