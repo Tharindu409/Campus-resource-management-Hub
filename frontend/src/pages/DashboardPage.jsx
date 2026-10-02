@@ -369,7 +369,7 @@ export default function DashboardPage() {
           </div>
         ) : (
           <>
-            <section className="relative overflow-hidden rounded-3xl p-6 md:p-8 text-white" style={{ background: 'linear-gradient(135deg, #f97316 0%, #ea580c 45%, #9a3412 100%)' }}>
+            <section className="relative overflow-hidden rounded-3xl p-6 md:p-8 text-white" style={{ background: 'linear-gradient(135deg, #7c3aed 0%, #6d28d9 45%, #4c1d95 100%)' }}>
               <div className="absolute top-0 right-0 w-72 h-72 bg-white/10 rounded-full -translate-y-32 translate-x-28" />
               <div className="absolute bottom-0 left-0 w-56 h-56 bg-black/10 rounded-full translate-y-28 -translate-x-16" />
 
