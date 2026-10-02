@@ -163,14 +163,14 @@ export default function ResourcePage() {
             <div
               className="w-10 h-10 rounded-xl flex items-center justify-center shadow-md"
               style={{
-                background: 'linear-gradient(135deg, #f97316, #ea580c)',
+                background: 'linear-gradient(135deg, #7c3aed, #6d28d9)',
               }}
             >
               <Boxes size={20} className="text-white" />
             </div>
             <div>
               <h1 className="text-2xl font-bold text-gray-900">Resources</h1>
-              <p className="text-sm uppercase tracking-[0.18em] font-medium text-orange-600">
+              <p className="text-sm uppercase tracking-[0.18em] font-medium text-violet-600">
                 Browse and manage campus facilities and assets
               </p>
             </div>
@@ -179,7 +179,7 @@ export default function ResourcePage() {
           <div className="flex gap-3">
             <button
               onClick={fetchResources}
-              className="px-4 py-2 rounded-xl text-sm font-medium flex items-center gap-2 transition-all duration-200 hover:bg-orange-50 text-orange-600"
+              className="px-4 py-2 rounded-xl text-sm font-medium flex items-center gap-2 transition-all duration-200 hover:bg-violet-50 text-violet-600"
             >
               <RefreshCw size={16} />
               Refresh
@@ -188,10 +188,10 @@ export default function ResourcePage() {
             {isAdmin && (
               <button
                 onClick={openCreateModal}
-                className="px-5 py-3 rounded-2xl text-sm font-semibold text-white flex items-center gap-2 shadow-md transition-all duration-200 hover:shadow-orange-500/30 hover:scale-105"
+                className="px-5 py-3 rounded-2xl text-sm font-semibold text-white flex items-center gap-2 shadow-md transition-all duration-200 hover:shadow-violet-600/30 hover:scale-105"
                 style={{
-                  background: 'linear-gradient(135deg, #f97316, #ea580c)',
-                  boxShadow: '0 4px 12px 0 rgba(249,115,22,0.25)',
+                  background: 'linear-gradient(135deg, #7c3aed, #6d28d9)',
+                  boxShadow: '0 4px 12px 0 rgba(124,58,237,0.25)',
                 }}
               >
                 <PlusCircle size={16} />
@@ -207,13 +207,13 @@ export default function ResourcePage() {
           <div className="relative mb-4">
             <Search
               size={18}
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-500"
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-violet-600"
             />
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search by name, type, location, or description..."
-              className="w-full pl-11 pr-4 py-3.5 rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-orange-500/30 focus:border-orange-500 border border-gray-200 bg-gray-50 text-gray-900"
+              className="w-full pl-11 pr-4 py-3.5 rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-violet-600/30 focus:border-violet-600 border border-gray-200 bg-gray-50 text-gray-900"
             />
           </div>
 
@@ -223,12 +223,12 @@ export default function ResourcePage() {
             <div className="relative">
               <Filter
                 size={14}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-orange-500"
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-violet-600"
               />
               <select
                 value={typeFilter}
                 onChange={(e) => setTypeFilter(e.target.value)}
-                className="w-full pl-9 pr-8 py-2.5 rounded-xl text-sm outline-none appearance-none cursor-pointer transition-all focus:ring-2 focus:ring-orange-500/30 focus:border-orange-500 border border-gray-200 bg-gray-50 text-gray-900"
+                className="w-full pl-9 pr-8 py-2.5 rounded-xl text-sm outline-none appearance-none cursor-pointer transition-all focus:ring-2 focus:ring-violet-600/30 focus:border-violet-600 border border-gray-200 bg-gray-50 text-gray-900"
               >
                 {FILTER_TYPES.map((type) => (
                   <option key={type} value={type}>
@@ -244,11 +244,11 @@ export default function ResourcePage() {
 
             {/* Status Filter */}
             <div className="relative">
-              <div className="absolute left-3 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-orange-500" />
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-violet-600" />
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full pl-9 pr-8 py-2.5 rounded-xl text-sm outline-none appearance-none cursor-pointer transition-all focus:ring-2 focus:ring-orange-500/30 focus:border-orange-500 border border-gray-200 bg-gray-50 text-gray-900"
+                className="w-full pl-9 pr-8 py-2.5 rounded-xl text-sm outline-none appearance-none cursor-pointer transition-all focus:ring-2 focus:ring-violet-600/30 focus:border-violet-600 border border-gray-200 bg-gray-50 text-gray-900"
               >
                 {FILTER_STATUS.map((status) => (
                   <option key={status} value={status}>
@@ -266,13 +266,13 @@ export default function ResourcePage() {
             <div className="relative">
               <MapPin
                 size={14}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-orange-500"
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-violet-600"
               />
               <input
                 value={locationFilter}
                 onChange={(e) => setLocationFilter(e.target.value)}
                 placeholder="Location"
-                className="w-full pl-9 pr-3 py-2.5 rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-orange-500/30 focus:border-orange-500 border border-gray-200 bg-gray-50 text-gray-900"
+                className="w-full pl-9 pr-3 py-2.5 rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-violet-600/30 focus:border-violet-600 border border-gray-200 bg-gray-50 text-gray-900"
               />
             </div>
 
@@ -280,7 +280,7 @@ export default function ResourcePage() {
             <div className="relative">
               <Users
                 size={14}
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-orange-500"
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-violet-600"
               />
               <input
                 type="number"
@@ -288,7 +288,7 @@ export default function ResourcePage() {
                 value={minCapacityFilter}
                 onChange={(e) => setMinCapacityFilter(e.target.value)}
                 placeholder="Min capacity"
-                className="w-full pl-9 pr-3 py-2.5 rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-orange-500/30 focus:border-orange-500 border border-gray-200 bg-gray-50 text-gray-900"
+                className="w-full pl-9 pr-3 py-2.5 rounded-xl text-sm outline-none transition-all focus:ring-2 focus:ring-violet-600/30 focus:border-violet-600 border border-gray-200 bg-gray-50 text-gray-900"
               />
             </div>
 
@@ -299,7 +299,7 @@ export default function ResourcePage() {
                 onClick={() => setLayout('grid')}
                 className={`flex-1 rounded-xl flex items-center justify-center gap-2 py-2.5 text-sm font-medium transition-all duration-200 ${
                   layout === 'grid'
-                    ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md'
+                    ? 'bg-gradient-to-r from-violet-600 to-violet-700 text-white shadow-md'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-200'
                 }`}
               >
@@ -312,7 +312,7 @@ export default function ResourcePage() {
                 onClick={() => setLayout('list')}
                 className={`flex-1 rounded-xl flex items-center justify-center gap-2 py-2.5 text-sm font-medium transition-all duration-200 ${
                   layout === 'list'
-                    ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-md'
+                    ? 'bg-gradient-to-r from-violet-600 to-violet-700 text-white shadow-md'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-200'
                 }`}
               >
@@ -327,7 +327,7 @@ export default function ResourcePage() {
         {!loading && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
             <div className="rounded-2xl p-4 text-center bg-white shadow-sm border border-gray-200 transition-all duration-200 hover:shadow-md">
-              <p className="text-2xl font-bold text-orange-600">
+              <p className="text-2xl font-bold text-violet-600">
                 {resources.length}
               </p>
               <p className="text-xs uppercase tracking-wide font-medium text-gray-500">
@@ -351,7 +351,7 @@ export default function ResourcePage() {
               </p>
             </div>
             <div className="rounded-2xl p-4 text-center bg-white shadow-sm border border-gray-200 transition-all duration-200 hover:shadow-md">
-              <p className="text-2xl font-bold text-orange-600">
+              <p className="text-2xl font-bold text-violet-600">
                 {resources.filter((r) => r.status === 'ACTIVE').length}
               </p>
               <p className="text-xs uppercase tracking-wide font-medium text-gray-500">
@@ -365,13 +365,13 @@ export default function ResourcePage() {
         {loading ? (
           <div className="rounded-2xl p-10 text-center bg-white shadow-sm border border-gray-200">
             <div className="flex flex-col items-center gap-3">
-              <RefreshCw size={24} className="animate-spin text-orange-500" />
+              <RefreshCw size={24} className="animate-spin text-violet-600" />
               <p className="text-gray-500">Loading resources...</p>
             </div>
           </div>
         ) : resources.length === 0 ? (
           <div className="rounded-2xl p-12 text-center bg-white shadow-sm border border-gray-200">
-            <Boxes size={40} className="mx-auto mb-3 opacity-50 text-orange-400" />
+            <Boxes size={40} className="mx-auto mb-3 opacity-50 text-violet-400" />
             <p className="text-gray-500">No resources found matching your criteria.</p>
             {(search || typeFilter !== 'ALL' || statusFilter !== 'ALL' || locationFilter || minCapacityFilter) && (
               <button
@@ -382,7 +382,7 @@ export default function ResourcePage() {
                   setLocationFilter('')
                   setMinCapacityFilter('')
                 }}
-                className="mt-4 text-sm underline text-orange-600 hover:text-orange-700 transition-colors"
+                className="mt-4 text-sm underline text-violet-600 hover:text-violet-700 transition-colors"
               >
                 Clear all filters
               </button>
